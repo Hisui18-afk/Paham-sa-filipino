@@ -1,0 +1,792 @@
+<!doctype html>
+<html lang="fil">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Paham sa Filipino — Pagtipon at Pag-suri ng mga Sagugurang na Pagtubod</title>
+<meta name="description" content="Isang antique storybook-style digital archive ng pananaliksik: Pagtipon at Pag-suri ng mga Sagugurang na Pagtubod sa Ligao National High School.">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=EB+Garamond:ital,wght@0,400;0,500;0,600;0,700;1,500;1,600&family=Playfair+Display:ital,wght@0,600;0,700;0,800;0,900;1,700&family=Cormorant+Garamond:ital,wght@1,500;1,600&display=swap" rel="stylesheet">
+<style>
+:root{
+  --wood1:#eccf9e; --wood2:#dcae6c; --wood3:#c08e4e;
+  --paper:#fbf3de; --ink:#3a2a18; --muted:#8a6a3f;
+  --accent:#b5822c;
+  --tb-bg:rgba(38,24,12,.94); --tb-fg:#f3e6c8; --tb-fg-dim:#c9a869; --tb-hover:rgba(255,232,180,.14);
+  --page-w:min(43vw,600px); --page-h:min(68vw,780px);
+}
+*{box-sizing:border-box}
+html,body{height:100%;margin:0}
+body{
+  font-family:"EB Garamond",Georgia,serif;color:var(--ink);
+  background:
+    linear-gradient(180deg,rgba(255,248,230,.4) 0%,rgba(240,208,150,.22) 45%,rgba(190,140,70,.4) 100%),
+    url('mayonbg.jpg') center 60%/cover no-repeat,
+    linear-gradient(135deg,var(--wood1),var(--wood2) 55%,var(--wood3));
+  overflow:hidden;
+}
+button{font:inherit;background:none;border:none;cursor:pointer;color:inherit}
+.landing{
+  position:fixed;inset:0;z-index:50;display:grid;place-items:center;
+  background:
+    linear-gradient(180deg,rgba(255,248,230,.5) 0%,rgba(240,208,150,.32) 45%,rgba(190,140,70,.62) 100%),
+    url('mayonbg.jpg') center 68%/cover no-repeat,
+    linear-gradient(135deg,var(--wood1),var(--wood2) 55%,var(--wood3));
+  transition:opacity .5s,visibility .5s
+}
+.landing.hide{opacity:0;visibility:hidden}
+.cover{
+  width:min(84vw,660px);min-height:min(76vh,460px);border-radius:16px;padding:36px;
+  color:var(--ink);text-align:center;display:flex;flex-direction:column;align-items:center;justify-content:center;
+  background:
+    radial-gradient(circle at 50% 30%,rgba(255,250,232,.9),transparent 55%),
+    linear-gradient(135deg,#fff6e0,#f7e6bd 45%,#f0dba3);
+  border:4px double var(--accent);box-shadow:0 30px 60px rgba(60,35,10,.35),inset 0 0 0 1px #fff7e2;
+}
+.cover-kicker{font:italic 500 16px "Cormorant Garamond",serif;letter-spacing:.16em;color:#8a5a1e;text-transform:uppercase}
+.cover-title{font:800 clamp(42px,7.5vw,72px)/1.05 "Playfair Display",serif;margin:12px 0;color:#7a2530;letter-spacing:.01em}
+.cover-study{font:italic 600 20px "Cormorant Garamond",serif;max-width:520px;line-height:1.4;color:#6e4320;margin:2px 0 6px}
+.cover-orn{font-size:34px;margin:14px 0;color:var(--accent)}
+.cover-sub{font:15px "EB Garamond",serif;max-width:500px;line-height:1.35;color:#7a5a34}
+.open-btn{
+  margin-top:18px;padding:13px 26px;border-radius:999px;border:1px solid #e6c66e;
+  background:linear-gradient(#d9a63c,#b5822c);color:#fffaf0;font-family:"EB Garamond",serif;font-weight:600;
+  letter-spacing:.07em;font-size:15px;cursor:pointer;box-shadow:0 8px 18px rgba(90,55,20,.3)
+}
+.open-btn:hover{filter:brightness(1.08)}
+.viewer{
+  height:100%;display:flex;flex-direction:column;
+  background:
+    linear-gradient(180deg,rgba(255,248,230,.4) 0%,rgba(240,208,150,.22) 45%,rgba(190,140,70,.4) 100%),
+    url('mayonbg.jpg') center 60%/cover no-repeat,
+    linear-gradient(135deg,var(--wood1),var(--wood2) 55%,var(--wood3));
+}
+.viewer:fullscreen{width:100vw;height:100vh}
+.viewer::backdrop{
+  background:
+    linear-gradient(180deg,rgba(255,248,230,.4) 0%,rgba(240,208,150,.22) 45%,rgba(190,140,70,.4) 100%),
+    url('mayonbg.jpg') center 60%/cover no-repeat,
+    linear-gradient(135deg,var(--wood1),var(--wood2) 55%,var(--wood3));
+}
+.topbar{
+  flex:none;height:50px;display:flex;align-items:center;justify-content:center;gap:10px;
+  background:var(--tb-bg);color:#e3c98f;font:italic 500 16px/1.2 "Cormorant Garamond",serif;letter-spacing:.03em;
+  border-bottom:1px solid rgba(255,232,180,.16);text-shadow:0 1px 3px rgba(0,0,0,.5);
+  padding:0 14px;text-align:center;
+}
+.topbar b{font-family:"Playfair Display",serif;color:#f8e3a8;font-weight:800;font-size:23px;letter-spacing:.01em;margin-right:8px}
+
+.stage{flex:1;position:relative;display:flex;align-items:center;justify-content:center;min-height:0;overflow:hidden;perspective:2400px;perspective-origin:50% 48%;}
+.book-wrap{position:relative;display:flex;align-items:center;justify-content:center;transition:transform .25s ease;}
+.book-wrap.zoom-2{transform:scale(1.18)}
+.book-wrap.zoom-3{transform:scale(1.38)}
+
+.book{
+  position:relative;display:flex;width:calc(var(--page-w)*2);height:var(--page-h);
+  transform-style:preserve-3d;
+  filter:drop-shadow(0 30px 44px rgba(0,0,0,.55));
+  opacity:1;transform:scale(1);transition:opacity .16s ease,transform .16s ease;
+}
+.book.quick-fade{opacity:0;transform:scale(.98)}
+.page{
+  width:var(--page-w);height:var(--page-h);position:relative;overflow:hidden;
+  background:var(--paper);border:1px solid rgba(0,0,0,.08);
+}
+.page.left{border-radius:2px 0 0 2px;box-shadow:inset -14px 0 22px rgba(0,0,0,.06)}
+.page.right{border-radius:0 2px 2px 0;box-shadow:inset 14px 0 22px rgba(0,0,0,.06)}
+.page:after,.turn-face:after{
+  content:"";position:absolute;inset:0;pointer-events:none;z-index:15;
+  background:
+    linear-gradient(120deg,rgba(255,255,255,.46) 0%,rgba(255,255,255,0) 24%,rgba(255,255,255,0) 70%,rgba(255,255,255,.24) 100%),
+    radial-gradient(130% 65% at 12% -8%, rgba(255,255,255,.32), transparent 55%);
+  mix-blend-mode:screen;opacity:.5;
+}
+.spine-gutter{
+  position:absolute;left:50%;top:0;bottom:0;width:20px;transform:translateX(-50%);
+  background:linear-gradient(90deg,rgba(0,0,0,0),rgba(0,0,0,.18),rgba(255,255,255,.10),rgba(0,0,0,.16),rgba(0,0,0,0));
+  z-index:6;pointer-events:none
+}
+.page-inner{position:absolute;inset:0;padding:34px 38px 30px;display:flex;flex-direction:column}
+.running{font:italic 500 13px "Cormorant Garamond",serif;color:var(--muted);letter-spacing:.1em;border-bottom:1px solid rgba(0,0,0,.08);padding-bottom:7px;margin-bottom:12px;text-transform:uppercase}
+.page-head{font-family:"Playfair Display",serif;font-weight:700;color:var(--ink);font-size:24px;line-height:1.18;margin:3px 0 14px}
+.page-body{font-size:15px;line-height:1.5;overflow:hidden;flex:1;color:#2a2a2a}
+.page-body p{margin:0 0 9px;text-align:justify}
+.page-body h4{font-family:"Playfair Display",serif;font-size:14.5px;color:var(--ink);margin:11px 0 5px;letter-spacing:.06em;text-transform:uppercase;font-weight:700}
+.page-body a{color:var(--accent);text-decoration:underline;text-underline-offset:2px}
+.page.is-refs .page-body{font-size:12px;line-height:1.32}
+.page.is-refs .page-body p{margin-bottom:8px;overflow-wrap:anywhere}
+.folio{display:flex;justify-content:center;margin-top:8px;color:var(--muted);font:12px "EB Garamond",serif}
+.folio-num{min-width:30px;text-align:center}
+
+.turn-sheet{
+  --turn-angle:180deg;--turn-sign:-1;
+  position:absolute;top:0;height:100%;width:var(--page-w);z-index:9;
+  transform-style:preserve-3d;visibility:hidden;pointer-events:none;
+  will-change:transform,filter;backface-visibility:visible;
+}
+.turn-sheet.right-turn{left:50%;transform-origin:left center;--turn-sign:-1}
+.turn-sheet.left-turn{left:0;transform-origin:right center;--turn-sign:1}
+.turn-sheet.anim{visibility:visible;pointer-events:auto;animation:flipRight .36s ease-out forwards}
+.turn-sheet.anim.left{animation-name:flipLeft}
+.turn-face{
+  position:absolute;inset:0;backface-visibility:hidden;overflow:hidden;
+  background:var(--paper);border:1px solid rgba(0,0,0,.08);
+  box-shadow:inset 0 0 22px rgba(0,0,0,.05);
+  transform-style:preserve-3d;
+}
+.turn-face.back{transform:rotateY(180deg)}
+.turn-face:before{
+  content:"";position:absolute;inset:0;pointer-events:none;z-index:20;
+  background:linear-gradient(90deg,rgba(0,0,0,.22) 0%,rgba(0,0,0,.03) 11%,transparent 35%,rgba(255,255,255,.16) 58%,rgba(0,0,0,.05) 82%,rgba(0,0,0,.16) 100%);
+  opacity:0;transition:opacity .1s;
+}
+.turn-sheet:after{
+  content:"";position:absolute;top:0;bottom:0;width:34%;opacity:0;pointer-events:none;z-index:30;
+  background:linear-gradient(90deg,transparent 0%,rgba(0,0,0,.10) 24%,rgba(0,0,0,.34) 50%,rgba(0,0,0,.08) 76%,transparent 100%);
+  filter:blur(5px);
+}
+.turn-sheet.anim .turn-face:before{animation:pageLight .36s ease-out both}
+.turn-sheet.anim:after{animation:curlShadow .36s ease-out both}
+
+@keyframes pageLight{0%{opacity:.06}50%{opacity:.32}100%{opacity:.03}}
+@keyframes curlShadow{0%{opacity:0;transform:translateX(0) scaleX(.8)}50%{opacity:.42;transform:translateX(45%) scaleX(1.05)}100%{opacity:0;transform:translateX(200%) scaleX(.8)}}
+@keyframes flipRight{
+  0%{visibility:visible;transform:rotateY(0deg) translateZ(0) scaleX(1)}
+  50%{transform:rotateY(-90deg) translateZ(14px) scaleX(.84)}
+  100%{transform:rotateY(-180deg) translateZ(0) scaleX(1)}
+}
+@keyframes flipLeft{
+  0%{visibility:visible;transform:rotateY(0deg) translateZ(0) scaleX(1)}
+  50%{transform:rotateY(90deg) translateZ(14px) scaleX(.84)}
+  100%{transform:rotateY(180deg) translateZ(0) scaleX(1)}
+}
+
+.edge-nav{
+  position:absolute;top:0;bottom:0;width:9%;min-width:44px;z-index:11;
+  display:flex;align-items:center;
+  color:rgba(255,255,255,.5);font-size:36px;transition:background .15s,color .15s;
+}
+.edge-nav.prev{left:0;justify-content:flex-start;padding-left:8px}
+.edge-nav.next{right:0;justify-content:flex-end;padding-right:8px}
+.edge-nav:hover{background:linear-gradient(90deg,rgba(0,0,0,.18),transparent);color:#fff}
+.edge-nav.next:hover{background:linear-gradient(270deg,rgba(0,0,0,.18),transparent)}
+.edge-nav[disabled]{opacity:0;pointer-events:none}
+
+.toolbar{
+  flex:none;min-height:52px;display:flex;align-items:center;justify-content:center;gap:20px;
+  padding:6px 14px;background:var(--tb-bg);border-top:1px solid rgba(255,255,255,.06);
+  flex-wrap:wrap;position:relative;z-index:15;
+}
+.tb-group{display:flex;align-items:center;gap:2px}
+.tb-btn{
+  width:34px;height:34px;border-radius:6px;display:grid;place-items:center;
+  color:var(--tb-fg-dim);transition:background .12s,color .12s;
+}
+.tb-btn svg{width:18px;height:18px}
+.tb-btn:hover{background:var(--tb-hover);color:var(--tb-fg)}
+.tb-btn.active{color:var(--accent);background:rgba(47,143,224,.16)}
+.tb-page{display:flex;align-items:center;gap:5px;color:var(--tb-fg-dim);font:13px/1 "EB Garamond",serif;margin:0 4px}
+.tb-page input{
+  width:44px;text-align:center;background:rgba(255,255,255,.08);border:1px solid rgba(255,255,255,.16);
+  border-radius:4px;color:var(--tb-fg);font:13px/1 "EB Garamond",serif;padding:7px 2px;
+}
+.tb-page input::-webkit-outer-spin-button,.tb-page input::-webkit-inner-spin-button{-webkit-appearance:none;margin:0}
+
+.tb-slider{
+  --pct:0%;width:min(220px,26vw);min-width:110px;height:22px;margin:0 2px;
+  appearance:none;background:transparent;cursor:pointer;
+}
+.tb-slider::-webkit-slider-runnable-track{
+  height:5px;border-radius:99px;
+  background:linear-gradient(90deg,#e9c15a var(--pct),rgba(255,255,255,.18) var(--pct));
+  border:1px solid rgba(233,193,90,.5);
+}
+.tb-slider::-moz-range-track{
+  height:5px;border-radius:99px;
+  background:linear-gradient(90deg,#e9c15a var(--pct),rgba(255,255,255,.18) var(--pct));
+  border:1px solid rgba(233,193,90,.5);
+}
+.tb-slider::-webkit-slider-thumb{
+  appearance:none;width:15px;height:15px;margin-top:-5.5px;border-radius:50%;
+  border:2px solid #f1d27f;background:radial-gradient(circle at 35% 30%,#fff0b0,#c38c31 62%,#71451f);
+  box-shadow:0 2px 6px rgba(0,0,0,.4);
+}
+.tb-slider::-moz-range-thumb{
+  width:15px;height:15px;border-radius:50%;
+  border:2px solid #f1d27f;background:radial-gradient(circle at 35% 30%,#fff0b0,#c38c31 62%,#71451f);
+  box-shadow:0 2px 6px rgba(0,0,0,.4);
+}
+
+.thumb-panel{
+  position:fixed;left:0;right:0;bottom:52px;max-height:min(58vh,520px);
+  background:var(--tb-bg);border-top:1px solid rgba(255,255,255,.08);
+  transform:translateY(16px);opacity:0;visibility:hidden;pointer-events:none;
+  transition:opacity .2s ease,transform .2s ease,visibility 0s linear .2s;z-index:20;
+  display:flex;flex-direction:column;
+}
+.thumb-panel.open{
+  transform:translateY(0);opacity:1;visibility:visible;pointer-events:auto;
+  transition:opacity .2s ease,transform .2s ease,visibility 0s linear 0s;
+}
+.thumb-panel-head{display:flex;align-items:center;justify-content:space-between;padding:10px 16px;color:var(--tb-fg);font:13px "EB Garamond",serif;letter-spacing:.05em;text-transform:uppercase;border-bottom:1px solid rgba(255,255,255,.06)}
+.thumb-panel-head button{width:26px;height:26px;display:grid;place-items:center;border-radius:5px;color:var(--tb-fg-dim)}
+.thumb-panel-head button:hover{background:var(--tb-hover);color:var(--tb-fg)}
+.thumb-grid{overflow-y:auto;padding:14px;display:grid;grid-template-columns:repeat(auto-fill,minmax(104px,1fr));gap:12px}
+.thumb-item{cursor:pointer;text-align:center}
+.thumb-item .thumb-card{
+  aspect-ratio:.72;background:var(--paper);border-radius:3px;padding:8px 7px;overflow:hidden;
+  border:2px solid transparent;box-shadow:0 3px 10px rgba(0,0,0,.4);
+  font-size:6.2px;line-height:1.25;color:#555;text-align:left;
+}
+.thumb-item .thumb-card b{display:block;font-size:7.4px;color:#222;margin-bottom:3px}
+.thumb-item.active .thumb-card{border-color:var(--accent)}
+.thumb-item span{display:-webkit-box;-webkit-box-orient:vertical;-webkit-line-clamp:2;overflow:hidden;margin-top:6px;font-size:11px;line-height:1.3;color:var(--tb-fg-dim)}
+.thumb-item:hover span{color:var(--tb-fg)}
+
+.search-panel{
+  position:fixed;top:44px;right:14px;width:min(320px,86vw);
+  background:var(--tb-bg);border:1px solid rgba(255,255,255,.1);border-radius:8px;
+  box-shadow:0 12px 30px rgba(0,0,0,.5);z-index:25;display:none;flex-direction:column;overflow:hidden;
+}
+.search-panel.open{display:flex}
+.search-panel input{
+  border:none;background:rgba(255,255,255,.08);color:var(--tb-fg);padding:11px 13px;font:14px "EB Garamond",serif;
+  border-bottom:1px solid rgba(255,255,255,.08);
+}
+.search-results{max-height:280px;overflow-y:auto}
+.search-results .sr-item{padding:9px 13px;color:var(--tb-fg-dim);font-size:13px;cursor:pointer;border-bottom:1px solid rgba(255,255,255,.05)}
+.search-results .sr-item b{color:var(--accent);font-weight:600}
+.search-results .sr-item:hover{background:var(--tb-hover);color:var(--tb-fg)}
+.search-results .sr-empty{padding:14px;color:var(--tb-fg-dim);font-size:12px;text-align:center}
+
+.toast{
+  position:fixed;left:50%;bottom:74px;transform:translate(-50%,12px);
+  background:rgba(20,20,22,.96);color:#eee;padding:9px 16px;border-radius:999px;font-size:13px;
+  opacity:0;pointer-events:none;transition:opacity .2s,transform .2s;z-index:40;
+}
+.toast.show{opacity:1;transform:translate(-50%,0)}
+
+@media (max-width:880px){
+  body{overflow:auto}
+  .topbar{height:auto;min-height:42px;font-size:12px;padding:6px 10px;line-height:1.3}
+  .topbar b{font-size:15px;display:block}
+  .book{width:min(94vw,600px);height:min(126vw,760px)}
+  .book .page.left,.book .page.right{display:none}
+  .book .page.single{display:block;width:100%;height:100%}
+  .book .spine-gutter{display:none}
+  .book{--page-w:min(94vw,600px);--page-h:min(126vw,760px)}
+  .turn-sheet{width:100% !important;left:0 !important;transform-origin:center !important}
+  .turn-sheet.right-turn{animation-name:flipSingleRight}
+  .turn-sheet.left-turn{animation-name:flipSingleLeft}
+  @keyframes flipSingleRight{0%{transform:rotateY(0) translateZ(0) scaleX(1)}50%{transform:rotateY(-90deg) translateZ(14px) scaleX(.84)}100%{transform:rotateY(-180deg) translateZ(0) scaleX(1)}}
+  @keyframes flipSingleLeft{0%{transform:rotateY(0) translateZ(0) scaleX(1)}50%{transform:rotateY(90deg) translateZ(14px) scaleX(.84)}100%{transform:rotateY(180deg) translateZ(0) scaleX(1)}}
+  .edge-nav{width:15%;font-size:28px}
+  .toolbar{gap:6px;padding:6px 4px}
+  .tb-btn{width:29px;height:29px}
+  .tb-btn svg{width:16px;height:16px}
+  .tb-slider{width:min(150px,42vw);min-width:80px}
+  .page-inner{padding:22px 18px 18px}
+  .page-head{font-size:17px}
+  .page-body{font-size:13.6px}
+  .thumb-grid{grid-template-columns:repeat(auto-fill,minmax(84px,1fr))}
+}
+@media (prefers-reduced-motion:reduce){
+  *,*::before,*::after{scroll-behavior:auto !important;animation-duration:.001ms !important;animation-iteration-count:1 !important;transition-duration:.001ms !important}
+}
+</style>
+</head>
+<body>
+<div class="landing" id="landing">
+  <div class="cover">
+    <div class="cover-kicker">Isang digital na arkibo ng pananaliksik</div>
+    <div class="cover-title">Paham sa Filipino</div>
+    <div class="cover-study">Pagtipon at Pag-suri ng mga Sagugurang na Pagtubod</div>
+    <div class="cover-orn">❦ ❧ ❦</div>
+    <div class="cover-sub">Sa Kamatayan, Binyag, Pag-aasawa, at Pagbubuntis/Panganganak</div>
+    <button class="open-btn" id="openBook">Buksan ang Aklat</button>
+  </div>
+</div>
+<div class="viewer" id="viewer">
+  <div class="topbar"><b>Paham sa Filipino</b>Pagtipon at Pag-suri ng mga Sagugurang na Pagtubod</div>
+
+  <div class="stage" id="stage">
+    <button class="edge-nav prev" id="edgePrev" aria-label="Nakaraang pahina">&lsaquo;</button>
+    <div class="book-wrap" id="bookWrap">
+      <div class="book" id="book">
+        <div class="page left" id="leftPage"></div>
+        <div class="page right" id="rightPage"></div>
+        <div class="page single" id="singlePage"></div>
+        <div class="spine-gutter"></div>
+        <div class="turn-sheet right-turn" id="turnSheetR">
+          <div class="turn-face" id="turnFrontR"></div><div class="turn-face back" id="turnBackR"></div>
+        </div>
+        <div class="turn-sheet left-turn" id="turnSheetL">
+          <div class="turn-face" id="turnFrontL"></div><div class="turn-face back" id="turnBackL"></div>
+        </div>
+      </div>
+    </div>
+    <button class="edge-nav next" id="edgeNext" aria-label="Susunod na pahina">&rsaquo;</button>
+  </div>
+
+  <div class="thumb-panel" id="thumbPanel">
+    <div class="thumb-panel-head">
+      <span>Lahat ng Pahina</span>
+      <button id="closeThumbs" aria-label="Isara"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="5" y1="5" x2="19" y2="19"/><line x1="19" y1="5" x2="5" y2="19"/></svg></button>
+    </div>
+    <div class="thumb-grid" id="thumbGrid"></div>
+  </div>
+
+  <div class="search-panel" id="searchPanel">
+    <input id="searchInput" type="text" placeholder="Maghanap sa nilalaman..." autocomplete="off">
+    <div class="search-results" id="searchResults"></div>
+  </div>
+
+  <div class="toast" id="toast"></div>
+
+  <footer class="toolbar" id="toolbar">
+    <div class="tb-group">
+      <button class="tb-btn" id="thumbsBtn" title="Mga Thumbnail"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="7" height="7"/><rect x="14" y="3" width="7" height="7"/><rect x="3" y="14" width="7" height="7"/><rect x="14" y="14" width="7" height="7"/></svg></button>
+      <button class="tb-btn" id="searchBtn" title="Maghanap"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="7"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg></button>
+    </div>
+    <div class="tb-group" id="pageNavGroup">
+      <button class="tb-btn" id="firstBtn" title="Unang pahina"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polygon points="17,5 9,12 17,19" fill="currentColor" stroke="none"/><line x1="6" y1="5" x2="6" y2="19"/></svg></button>
+      <button class="tb-btn" id="tbPrevBtn" title="Nakaraan"><svg viewBox="0 0 24 24"><polygon points="16,5 8,12 16,19" fill="currentColor" stroke="none"/></svg></button>
+      <input id="pageRange" class="tb-slider" type="range" min="1" value="1" step="1" aria-label="Pumili ng pahina">
+      <span class="tb-page"><input id="pageSlider" type="number" min="1" value="1" aria-label="Pahina"> / <span id="totalPages">1</span></span>
+      <button class="tb-btn" id="tbNextBtn" title="Susunod"><svg viewBox="0 0 24 24"><polygon points="8,5 16,12 8,19" fill="currentColor" stroke="none"/></svg></button>
+      <button class="tb-btn" id="lastBtn" title="Huling pahina"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polygon points="7,5 15,12 7,19" fill="currentColor" stroke="none"/><line x1="18" y1="5" x2="18" y2="19"/></svg></button>
+    </div>
+    <div class="tb-group">
+      <button class="tb-btn" id="zoomOutBtn" title="Paliitin"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="7"/><line x1="21" y1="21" x2="16.65" y2="16.65"/><line x1="8" y1="11" x2="14" y2="11"/></svg></button>
+      <button class="tb-btn" id="zoomInBtn" title="Palakihin"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="7"/><line x1="21" y1="21" x2="16.65" y2="16.65"/><line x1="8" y1="11" x2="14" y2="11"/><line x1="11" y1="8" x2="11" y2="14"/></svg></button>
+      <button class="tb-btn" id="autoplayBtn" title="Auto-flip"><svg viewBox="0 0 24 24"><polygon points="6,4 20,12 6,20" fill="currentColor" stroke="none"/></svg></button>
+      <button class="tb-btn" id="soundBtn" title="Tunog"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 9v6h4l5 4V5L8 9H4z" fill="currentColor" stroke="none"/><line x1="16" y1="9" x2="22" y2="15"/><line x1="22" y1="9" x2="16" y2="15"/></svg></button>
+      <button class="tb-btn" id="fullscreenBtn" title="Fullscreen"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 9V4h5"/><path d="M15 4h5v5"/><path d="M20 15v5h-5"/><path d="M9 20H4v-5"/></svg></button>
+      <button class="tb-btn" id="shareBtn" title="Ibahagi"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="18" cy="5" r="2.4"/><circle cx="6" cy="12" r="2.4"/><circle cx="18" cy="19" r="2.4"/><line x1="8.3" y1="10.7" x2="15.7" y2="6.3"/><line x1="8.3" y1="13.3" x2="15.7" y2="17.7"/></svg></button>
+      <button class="tb-btn" id="downloadBtn" title="I-print / I-download"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3v12"/><polyline points="7,10 12,15 17,10"/><path d="M5 19h14"/></svg></button>
+    </div>
+  </footer>
+</div>
+<script>
+const PAGES = [{"head": "Paunang Salita","nodes": [{"t": "p","x": "Ang Paham sa Filipino ay isang digital na arkibo ng mga sagugurang na pagtubod o pamahiing nakaugnay sa mahahalagang yugto ng buhay: kamatayan, binyag, pag-aasawa, at pagbubuntis o panganganak. Inilalahad dito ang pananaliksik ng mga mag-aaral sa Baitang 10 ng Ligao National High School na naglalayong tipunin, suriin, at mapanatili ang kaalaman tungkol sa mga paniniwalang minana mula sa mga nakatatanda."},{"t": "p","x": "Ang anyong aklat na ito ay ginawang parang lumang pahina ng isang minanang baul ng alaala: may mga kabanata, sanggunian, folio, at pahinang maaaring balikan. Sa halip na mawala sa mga lumang salaysay, ang mga paniniwala ay itinatala sa isang mas madaling lapitan at maibahaging anyong digital."},{"t": "p","x": "Kasabay nito, ang pag-aaral ay hindi naglalayong sabihing siyentipikong totoo ang bawat pamahiin. Tinutukoy nito ang kanilang papel bilang bahagi ng kultura, karanasan, tradisyon, at pagkakakilanlan ng isang pamayanan. Ang aklat na ito ay paanyaya sa maingat na pag-alala, pag-unawa, at pagpapanatili ng kulturang Pilipino sa harap ng modernisasyon."}],"isRefs": false},{"head": "Kabanata I","nodes": [{"t": "h","x": "Panimula"},{"t": "p","x": "Ang kultura ay kaakibat sa buhay ng bawat tao. Ito ang nagsisilbing salamin ng pagkakakilanlan ng isang pamayanan. Binubuo ito ng mga paniniwala, kaugalian, tradisyon at gawi na minana at patuloy na isinasabuhay ng mga mamamayan sa paglipas ng panahon. Isa sa mahahalagang bahagi ng kulturang Pilipino ang mga sagugurang na pagtubod o pamahiin, na karaniwang nauugnay sa mahahalagang yugto ng buhay ng tao tulad ng kasal, binyag, pagbubuntis, panganganak, at kamatayan. Bagamat hindi nakabatay sa siyentipikong paliwanag, ang mga paniniwalang ito ay may malalim na impluwensiya sa pag-iisip at kilos ng mga tao sa isang komunidad."},{"t": "p","x": "Ang mga pamahiin ay matibay na bahagi ng kulturang Pilipino na naging kaugalian at paniniwala sa pang-araw-araw na pamumuhay ng maraming tao. Pinaniniwalaan na ang pagsunod sa mga ito ay nagsisilbing gabay tungo sa isang matagumpay at payapang buhay. Ayon sa mga nakatatanda, ang hindi pagsunod sa mga pamahiin ay maaring magdulot ng kamalasan, samantalang ang pagsunod naman ay nagdadala ng suwerte at mabuting kapalaran."}],"isRefs": false},{"head": "Panimula","nodes": [{"t": "p","x": "Sa paglipas ng panahon, ang pagsunod sa mga pamahiin ay hindi lamang nakabatay sa paniniwala kundi nagsisilbi ring pagpapakita ng respeto at pagpapahalaga sa mga payo, babala, at paalala ng mga nakatatanda. Gayunpaman, sa kasalukuyang panahon ng modernisasyon at pag-unlad ng agham at teknolohiya, unti-unti nang nababawasan ang paniniwala at pagsunod ng ilan sa mga pamahiing ito. Ang sagugurang na pagtubod o paniniwala ay karaniwang naipapasa sa pamamagitan ng salin-salin na kaalaman mula sa mga nakatatanda patungo sa mga susunod pang henerasyon at sa patuloy na pag-usbong ng makabagong edukasyon, agham, at teknolohiya, unti-unting nagbabago ang mga pananaw ng mga mamamayan hinggil sa mga paniniwalang ito. Dahil dito, may mga sagugurang na pagtubod na unti-unti nang nawawala o kaya naman hindi na nasusunod."},{"t": "p","x": "Binibigyang-diin sa Saligang Batas ng Republika ng Pilipinas (1987) ang kahalagahan ng pangangalaga at pagpapaunlad ng kulturang Pilipino. Batay sa Artikulo XIV, Seksiyon 14 isinasaad na dapat itaguyod ng estado ang pangangalaga, pagpapayaman at dinamikong ebolusyon ng isang kulturang Pilipino salig sa simulaing pagkakaisa sa kaligirang malaya, artistiko at intelektuwal na pagpapahayag. Isinasaad rin sa Artikulo XIV, Seksiyon 17 na dapat kilalanin, igalang, at pangalagaan ng estado ang mga karapatan ng mga katutubong pamayanang kultural sa pagpapanatili at pagpapayaman ng kanilang kultura, mga tradisyon at mga konstitusyon. Ang mga karapatang ito ay dapat isaalang-alang sa pagbabalangkas ng mga pambansang plano at patakaran."},{"t": "p","x": "Ani ni Dr. Florentino Hornedo, dalubhasa sa kasaysayan, literatura at pilosopiya at may akda ng mga libro ukol sa kultura gaya ng Culture and the Community in the Philippine Fiesta and other Celebrations, isa lamang ang pamahiin sa mga paraan upang maipaliwanag ng tao ang mga bagay na nakapaligid sa kanya. Halimbawa nito, kung pag-uusapan ang kasal, pamahiin na ang bigas at asin ang unang dapat na ipasok sa titirhang bahay ng bagong kasal. Isa pang halimbawa ay ang mahigpit na pagbabawal sa pagwawalis sa paligid ng bahay kung may nakaburol na patay sa bahay."}],"isRefs": false},{"head": "Panimula","nodes": [{"t": "p","x": "Iilan lamang ito sa mga halimbawa ng pamahiing minana at naging bahagi ng buhay at kultura ng mga tao. Subalit katulad ng sinabi ni Hornedo, “Superstitions are primitive forms of science. They are generalizations on limited evidence.” Ang mga ito ay wala pang sapat na basehan at patunay, ipinapalagay lamang na isa ito sa mga bagay upang mapabuti at magabayan ang buhay ng tao."},{"t": "p","x": "Sa kabuuan, nilalayon ng pananaliksik na ito na matipon at masuri ang mga iba't ibang sagugurang na pagtubod at malaman ang antas ng kaalaman ng mga mag-aaral hinggil dito. Sa pamamagitan ng pagbibigay ng talatanungan sa mga mag-aaral, ang mga nakalap na datos at impormasyon ay organisadong titipunin at kritikal na susuriin. Layunin din ng pananaliksik na ito na makatulong sa pagpapanatili at pagpapalaganap ng lokal na kultura sa pamamagitan ng dokumentasyon ng mga impormasyon, kalipunan ng mga salita, kahulugan at datos na magbibigay linaw at magsisilbing pundasyon, hindi lamang bilang isang tradisyon kundi isang mahalagang parte ng kabuuang identidad."}],"isRefs": false},{"head": "Paglalahad ng Suliranin","nodes": [{"t": "p","x": "Ang pag-aaral na ito ay nakatuon sa pagtipon at pagsuri ng mga sagugurang na pagtubod ng piling mag-aaral ng Ligao National High School. Layunin nitong matukoy, mailahad, at mapanatili ang mga tradisyonal na paniniwala. Ninanais din ng pag-aaral na masuri ang antas ng kaalaman ng mga mag-aaral hinggil sa mga sagugurang na pagtubod at ang kahalagahan nito sa pagpapanatili ng lokal na kultura at tradisyon."},{"t": "p","x": "Bilang pagtitiyak, ang pananaliksik na ito ay naglalayong masagot ang mga sumusunod na katanungan:"},{"t": "p","x": "1. Ano-ano ang mga sagugurang na pagtubod batay sa mga sumusunod: (a) Kamatayan, (b) Binyag, (c) Pag-aasawa, (d) Pagbubuntis/Panganganak?"},{"t": "p","x": "2. Anong antas na kaalaman at pag-unawa mayroon ang mga mag-aaral patungkol sa mga sagugurang na pagtubod batay sa sumusunod: (a) Kamatayan, (b) Binyag, (c) Pag-aasawa, (d) Pagbubuntis/Panganganak?"},{"t": "p","x": "3. Mga hamon at hadlang sa pagpapanatili ng mga sagugurang na pagtubod."},{"t": "p","x": "4. Sa anong paraan magiging kapaki-pakinabang ang paggawa ng websites sa pagpapanatili at pagpapalaganap ng mga sagugurang na pagtubod."}],"isRefs": false},{"head": "Saklaw at Delimitasyon","nodes": [{"t": "p","x": "Ang pananaliksik na ito ay nakatuon sa pagtipon at pagsuri ng mga sagugurang na pagtubod sa Ligao National High School. Ang mga mananaliksik ay aalamin ang antas ng kaalaman ng mga mag-aaral sa pagtubod tungkol sa kasal/pag-aasawa, binyag, pagbubuntis/panganganak at kamatayan. Hindi nito sakop ang iba pang mga paniniwala o pagtubod sa pang-araw-araw na pamumuhay ng mga tao. Ang mga datos at impormasyon ay lilikumin sa mga piling mag-aaral sa Ligao National High School, partikular na ang nasa Baitang 10. Walumpu (80) ang bilang ng mga respondenteng magbibigay tugon sa isasagawang pananaliksik."}],"isRefs": false},{"head": "Kahalagahan ng Pag-aaral","nodes": [{"t": "p","x": "Ang pananaliksik na ito ay makatutulong sa mga sumusunod."},{"t": "h","x": "Mga Mag-aaral"},{"t": "p","x": "Ang pag-aaral na ito ay magsisilbing mahalagang sanggunian sa mga mag-aaral na nag-aaral ng kultura, wika, at panitikan. Magbibigay ito ng kaalaman at pag-unawa tungkol sa mga tradisyunal na paniniwala ng mga Pilipino, partikular sa konteksto ng lokal na pamayanan."},{"t": "h","x": "Mga Mamamayan ng Lungsod ng Ligao"},{"t": "p","x": "Makakatulong ang pananaliksik na ito sa pagpapalalim ng kamalayan ng mga mamamayan tungkol sa kanilang sariling identidad, kultura, at paniniwala. Magiging daan ito upang mapanatili at maipasa sa susunod na henerasyon ang mga sagugurang na pagtubod na unti-unti nang nawawala sa makabagong panahon."}],"isRefs": false},{"head": "Kahalagahan ng Pag-aaral","nodes": [{"t": "h","x": "Mga Guro"},{"t": "p","x": "Ang pananaliksik ay magiging kapaki-pakinabang bilang karagdagang materyal sa pagtuturo ng mga asignaturang may kaugnayan sa kultura at panitikan. Makatutulong ito sa pagpapayaman ng talakayan sa loob ng silid-aralan gamit ang mga lokal na paniniwalan o ang mga sagugurang na pagtubod."},{"t": "h","x": "Pamahalaang Lokal"},{"t": "p","x": "Ang resulta ng pananaliksik na ito ay maaaring magsilbing gabay sa pagbuo ng mga programang pang-edukasyon at pangkalusugan na isinasaalang-alang ang pagrespeto sa kultura ng komunidad. Makatutulong din ito sa wastong pagbibigay ng impormasyon nang hindi isinasantabi ang tradisyonal na paniniwala ng mga mamamayan."},{"t": "h","x": "Mga Taong Gumagamit ng Internet"},{"t": "p","x": "Sa oras na mailathala o maibahagi sa digital na plataporma, ang pananaliksik na ito ay magiging madaling mapagkukunan ng impormasyon tungkol sa mga sagugurang na pagtubod, lalo na para sa mga indibidwal na nagsasaliksik ng lokal na kultura."},{"t": "h","x": "Mga Susunod na Mananaliksik"},{"t": "p","x": "Ang pag-aaral na ito ay magsisilbing batayan at sanggunian ng mga susunod pang mananaliksik na nagnanais magsagawa ng kaugnay na pag-aaral. Maaari nila itong palawakin, paghambingin sa ibang lugar, o gamitin bilang panimulang hakbang sa mas masusing pananaliksik tungkol sa kulturang Pilipino."}],"isRefs": false},{"head": "Kabanata II","nodes": [{"t": "h","x": "Kaugnay na Literatura at Pag-aaral"},{"t": "p","x": "Sa kabanatang ito inilalahad ang buod ng mga napiling literatura at pag-aaral, inilalahad din ang lagom ng pag-aaral, kakulangan ng pananaliksik, batayang konseptwal ng pag-aaral at hinuha ng pag-aaral."},{"t": "h","x": "Pamahiin"},{"t": "p","x": "Binigyang-diin ni Yuvallos (2023), malaki ang papel ng mga pamahiin sa kulturang Pilipino. Anuman ang relihiyon o lugar na kinalalagyan, maraming Pilipino ang patuloy na naniniwala at nagsasagawa ng mga pamahiing minana pa mula sa mga ninuno. Hanggang ngayon, marami sa mga ito ang isinasabuhay pa rin, at may ilan pa ngang hindi natin namamalayan na isa na palang pamahiin."}],"isRefs": false},{"head": "Pamahiin","nodes": [{"t": "p","x": "Karaniwang makikita ang mga pamahiin sa pang-araw-araw na gawain, ngunit mas binibigyang-halaga ang mga ito sa mahahalagang yugto ng buhay. Ang kapanganakan, kasal, kaarawan, at ilang pagdiriwang ay may kalakip na mga tradisyon at paniniwala. Hindi rin natatapos ang mga ito sa kamatayan, sapagkat maging sa pagpanaw ay may kaugalian at ritwal na sinusunod."},{"t": "p","x": "Ayon kina Rosales at Viray (2024) sa kanilang akdang Filipino Culture and Values: Bases for Pandemic Response, nananatiling buhay ang pamahiin sa kulturang Pilipino dahil sa positibong pagtingin ng maraming tao rito. Ipinapakita na ang paniniwalang kinalakihan sa pamilya, sa mga personal na karanasan, at sa paniniwalang wala namang masamang maidudulot ang pagsunod rito. Sa ganitong pananaw, ang pamahiin ay hindi lamang basta nakasanayan kundi bahagi ng pang-araw-araw na buhay at pagpapahalaga ng mga Pilipino."},{"t": "p","x": "Sa akda nina Galay et al. (2025) na may pamagat Superstitious Beliefs: Unveiling Truth, ang mga pamahiin at tradisyonal na paniniwala ay kaugnay sa mahahalagang yugto ng buhay tulad ng kapanganakan, pagdadalaga o pagbibinata, pag-aasawa, at kamatayan. Isinasagawa ang mga ito upang magdala ng suwerte, makaiwas sa malas, at magkaroon ng mabuting kapalaran."}],"isRefs": false},{"head": "Pamahiin","nodes": [{"t": "p","x": "Ang mga paniniwalang ito ay patuloy na umiiral dahil sa kakulangan ng sapat na kaalaman at impormasyon, kaya't madalas itong tanggapin ng mga tao na may katotohanan kahit walang malinaw na patunay. Ang mga ito ay nagmula sa mga sinaunang tradisyon na patuloy na sinusunod bilang bahagi ng kultura at nagsisilbing pinagmumulan ng ginhawa at pag-asa ng mga tao."},{"t": "p","x": "Inilahad sa Balita Online (2025), na kinilala ang mga Pilipino sa pagiging mapamahiin, na naisasalin sa bawat henerasyon. Ang pamahiin ay isang tradisyonal na paniniwala o kaugalian na batay sa mga nakagisnang ritwal, kultura, at mga kuwento ng mga sinaunang tao, na kadalasang walang siyentipikong batayan. Karaniwang naiuugnay ito sa mga pangyayari o aksyon na pinaniniwalaang maaring magdala ng suwerte, malas o iba pang mga kahihinatnan sa hinaharap. Madalas itong sinusunod bilang paraan ng pag-iwas sa kapahamakan o pagtiyak ng magandang kapalaran. Ang mga pamahiin tungkol sa patay ay laganap sa Pilipinas at karaniwang sinusunod ito ng mga pamilya upang hindi magdulot ng kapahamakan o malas sa buhay nila at dahil sa paniniwalang wala namang mawawala kung susundin ang mga ito. Bagamat hindi na lahat ng kabataan ngayon ay lubos na naniniwala, marami pa rin ang sumusunod rito bilang bahagi ng pagpapahalaga sa tradisyon."}],"isRefs": false},{"head": "Kamatayan","nodes": [{"t": "p","x": "Ayon kay Montesa (2024), sa kanyang akdang Grief and Loss: Catholic Filipino Traditions, kabilang sa mga paniniwala ng mga Pilipino ang iba't ibang pamahiin tuwing lamay at libing tulad ng paglalagay ng rosaryo sa kamay ng yumao, pag-iwas sa pag-uwi agad mula sa sementeryo, at pagbabawal sa pagdadala ng pagkain pauwi mula sa lamay. Ang mga paniniwalang ito ay pinaniniwalaang nakatutulong upang maprotektahan ang pamilya laban sa malas o masasamang ispiritu at maging maayos ang paglalakbay ng kaluluwa ng namatay. Dagdag niya pa, mahalagang bahagi ng tradisyong Pilipino ang mga ritwal matapos ang libing tulad ng pasiyam, apatnapung araw na pagdarasal, at taunang pag-alala sa yumao. Ipinapakita rin na naniniwala ang maraming Pilipino na nananatili ang kaluluwa ng namatay hanggang sa ika-40 araw bago tuluyang makamit ang kapayapaan. Ang paglitaw ng mga insekto gaya ng paru-paro sa tahanan ng namatay ay itinuturing na simbolo na ang kaluluwa ng yumao ay nagbabantay o bumibisita sa kanyang pamilya, banggit pa nito. Batay sa pag-aaral, makikitang ang mga pamahiin kaugnay ng kamatayan ay hindi lamang paniniwalang walang batayan kundi bahagi ng kulturang Pilipino na nagbibigay kahulugan, kaayusan, at emosyonal na kapanatagan sa panahon ng pagluluksa."}],"isRefs": false},{"head": "Kamatayan","nodes": [{"t": "p","x": "Sa akdang Death and Afterlife in Jewish Thought: Between Tradition, Belief and Kabbalistic Esotericism, ang mga kaugalian ng pagluluksa sa tradisyong Hudyo ay maaring magbago sa paglipas ng panahon, ngunit nananatili pa ring nakaugat sa sinaunang paniniwala at tradisyon. Ipinakita rin ang mga pananaw ng Kabbalah tungkol sa kaluluwa at kabilang buhay, na nagbibigay ng mas malalim at makahulugang pagtingin sa kamatayan. Batay sa sinasabi sa tradisyong Hasidic, ang mga pumanaw naman ay tila nagbubukas ng mata ng mga naiwan upang higit na maunawaan ang kahalagahan ng buhay. Ipinapakita nito na ang pagpanaw ng isang tao ay nagdudulot ng mahalagang bahagi ng pananampalataya, pagninilay at nagsisilbing gabay upang mas maunawaan ng tao ang kahulugan ng buhay at pagkawala."}],"isRefs": false},{"head": "Pag-aasawa","nodes": [{"t": "p","x": "Ayon kay Kartal et al. (2024), sa tradisyong Anatolian, ang gelin göçü o bridal pick-up ay isang mahalagang gawi sa kasal na mayroon ng iba't ibang pamahiin bago, habang, at pagkatapos isagawa ang seremonya. Bago umalis ang nobya sa tahanan ng kanyang pamilya, nilalagyan siya ng pulang belo o laso bilang simbolo ng dangal at proteksiyon laban sa malas, at inaasahan ang kanyang pag-iyak bilang tanda ng pagmamahal at paggalang sa pamilya. Habang isinasagawa ang bridal pick-up, may mga ritwal tulad ng pagharang sa pinto kapalit ng munting bayad, pagwisik ng tubig sa likod ng sasakyan upang maging maayos ang kanilang pagsasama, at paglalagay ng barya sa sapatos para sa kasaganaan. Pagdating naman sa bahay ng lalaki, winawalisan o binubudburan ang nobyo ng trigo, bigas, o barya bilang simbolo ng kasaganaan at pagnanais ng masaganang pamilya. Ipinapakita ng mga gawaing ito na ang kasal sa kulturang Anatolian ay hindi lamang pag-iisang dibdib ng dalawang tao kundi isang mahalagang transisyon na pinangangalagaan sa pamamagitan ng mga ritwal at paniniwala na naglalayong magbigay ng suwerte, proteksiyon, at pagkakaisa ng dalawang pamilya."}],"isRefs": false},{"head": "Panganganak/ Pagbubuntis","nodes": [{"t": "p","x": "Batay kay Gray (2020), sa kanyang akdang Cultural Beliefs and Practices of Ethnic Filipinos: An Ethnographic Study, binigyang-diin niya ang mga kababaihang Aeta na nagsusuot ng isang piraso ng tela na tinatawag na bigkis. Naniniwala sila na sa pamamagitan ng pagsusuot nito, napipigilan ang pag-akyat ng dugo patungo sa puso. Palagi nila itong isinusuot at hindi dapat masyadong maluwag, sapagkat maaring magdulot ito ng tinatawag na bughat, na pinaniniwalaang sanhi ng pag-akyat ng hangin patungo sa ulo. Isang buwan matapos manganak, maaari nang tanggalin ng isang babaeng Aeta ang kanyang bigkis. Ang paniniwalang ito ng mga Aeta sa pagbubuntis ay kanilang sinusunod sapagkat naniniwala sila na makatutulong ito upang maging ligtas ang kanilang pagbubuntis."}],"isRefs": false},{"head": "Panganganak/ Pagbubuntis","nodes": [{"t": "p","x": "Sa akda nina Akin at Aydınlık (2024) na pinamagatang The Effect of Superstitions during Pregnancy on Quality of Life and Pregnancy Adjustments, binibigyang-diin kung paano nakakaapekto ang mga pamahiin at tradisyon sa karanasan ng mga buntis na kababaihan. Ang mga paniniwalang ito ay umiiral halimbawa na lamang sa konteksto ng pagkain: ang pagkain ng maasim ay magbubunga ng babaeng anak habang ang pagkain ng matatamis ay magreresulta sa anak na lalaki. Bukod pa rito, ang pagtatago ng pagbubuntis ay maaring magdulot ng anak na matalino at maganda. Ipinapakita rin na ang mga pamahiing ito ay maaring may masamang epekto o wala. Ang mga gawi tulad ng paglanghap ng rosas upang matiyak na ang sanggol ay mabango o pagkain ng quince upang magkaroon ng sanggol na may dimples ay walang masamang epekto at hindi nakakasama sa ina o sa sanggol. Ngunit ang pag-iwas sa masustansiyang pagkain tulad ng atay at isda dahil sa paniniwalang nagdudulot ito ng balik sa sanggol ay may masamang epekto sapagkat iniiwasan ng ina ang ilan sa masustansiyang pagkain. Ang pagsunod sa mga paniniwalang ito ay tradisyon na sa mga kababaihan ayon na rin sa turo ng mga nakatatanda, wala namang mawawala kung susundin ang mga ito habang pinapanatili pa rin ang kapakanan at kung ano ang makakabuti sa kanilang anak."}],"isRefs": false},{"head": "Kaugnay na Pag-aaral","nodes": [{"t": "h","x": "Kultura"},{"t": "p","x": "Batay sa pag-aaral ni Cruz (2025), Pagsusuri sa mga Gawi at Paniniwalang Kapampangan batay sa Digital na Koleksiyon ni Henry Otley Beyer sa Pambansang Aklatan, ang paniniwala sa mga pamahiin ay hindi mahihiwalay sa kultura at tradisyon ng isang indibidwal. Sa kabila ng mga pagbabagong dulot ng mga mananakop, patuloy pa rin ang pagsunod sa mga nakagisnang pamahiin. Madalas marinig ang mga katagang “Wala namang mawawala kung susunod ka,” na nagsisilbing katwiran para sa patuloy na pagyakap sa mga lokal na gawi. Sa mga Kristiyano, makikita ang katutubong Katolisismo, kung saan sa kabila ng 400 taon ng Kristiyanisasyon at impluwensyang kanluranin, hindi tuluyang nabura ang mga katutubong gawi at paniniwala. Ang pag-aaral ay nagbigay-diin sa likas na kakayahan ng tao na magsagawa ng mga kilos na sa tingin nila ay hindi nagdudulot ng masama."}],"isRefs": false},{"head": "Pamahiin","nodes": [{"t": "p","x": "Binigyang-diin nina Fliginskikh at Semenova (2022) ang kanilang pag-aaral na Syntactical Analysis of the English and Russian Superstitions, na nagsasagawa ng estruktural at nagagamit na pagsusuring sintaktikal sa ritwal ng paglipat tulad ng pagbubuntis, kapanganakan, kasal, at kamatayan sa mga wikang Ingles at Russian. Layunin nitong matukoy ang mga unibersal at natatanging katangian ng pagbuo ng pangungusap sa parehong wika, at ilahad ang karaniwang estruktura ng mga pamahiin na naipapahayag bilang berbal na yunit o pangungusap. Ang pag-aaral ay nagbibigay-diin sa mahalagang papel ng mga pamahiin sa buhay ng tao, partikular sa mga mahahalagang yugto ng buhay, bilang mga tekstong berbal na pasalita o pasulat na nag-aalok ng babala, paliwanag, o prediksiyon sa mga pangyayaring hindi maipaliwanag."}],"isRefs": false},{"head": "Pamahiin","nodes": [{"t": "p","x": "Sa pag-aaral nina Bilgiç at Karaahmet (2025), na pinamagatang Superstitions and Practices of Women in the Perinatal Period in Turkey: A Cross-Sectional Study, sinuri ang antas ng mga pamahiin at tradisyonal na gawi ng 612 kababaihan kaugnay ng pagbubuntis, panganganak, panahon ng puerperium, at pangangalaga sa sanggol. Natuklasan na mataas ang antas ng pagsunod sa mga hindi epektibong paniniwala at praktis, at may makabuluhang pagkakaiba sa kabuuang marka ng iskala batay sa lugar ng paninirahan at paniniwala sa tradisyonal na gawi. Sa mga kalahok, 77.7% ay walang asawa at 73.3% ay naninirahan sa lungsod; 39.1% ang naniniwala sa mga tradisyonal na pamamaraan, ngunit 70.8% ang nagsabing hindi nila aktuwal na isinasagawa ang mga ito. Ipinahihiwatig ng resulta na may ugnayan ang paninirahan sa lungsod at paniniwala sa tradisyon sa antas ng pagsunod sa mga hindi epektibong praktis. Makikitang nananatiling malakas ang impluwensiya ng kultura at nakaugaliang paniniwala kahit sa makabagong konteksto, gayundin na hindi laging magkatugma ang paniniwala at aktuwal na pagsasagawa ng mga tradisyong ito."}],"isRefs": false},{"head": "Kamatayan","nodes": [{"t": "p","x": "Ayon sa pag-aaral ni Amat (2021), na may pamagat na Pamahiin sa Kamatayan: Katutubong Konsepto ng mga Taclobanon, ang pamahiin sa kamatayan ay may malaking impluwensiya sa buhay ng mga Pilipino, tumutukoy sa mga aspetong tulad ng kultura, emosyon, at tagumpay. Ang mga pamahiin, na namana mula sa mga ninuno, ay patuloy na isinasagawa at may paniniwala na ang hindi pagsunod dito ay nagdudulot ng kamalasan o kasawian. Ang mga pamahiin kaugnay sa kamatayan, pagbuburol, at paglilibing ay itinuturing na gabay sa paghahanda sa hinaharap. Ang pagsunod sa mga ito ay nagiging repleksiyon ng pagkakakilanlan ng mga Pilipino at nagsisilbing panuntunan sa kanilang pang-araw-araw na buhay."}],"isRefs": false},{"head": "Kamatayan","nodes": [{"t": "p","x": "Ayon kay Nyaoko (2024) na pinamagatang The Role of Death and Burial Rituals in Inculcating Moral and Cultural Values in Abagusii Community of Western Kenya, ipinakita na ang mga ritwal ng kamatayan at paglilibing sa komunidad ng Abagusii ay hindi lamang seremonyal na gawain kundi mahalagang daluyan ng pagpapasa ng moral at kultural na pagpapahalaga. Subalit, may ilang paniniwala na maaaring hindi ganap na umaayon sa pananaw Kristiyano, kinikilala na ang mga ritwal na ito ay nagsisilbing yugto ng transisyon at paghahanda, kung saan hinihikayat ang mabuting pakikitungo sa kapwa, pagsunod sa batas, pagtulong sa iba, at pagsasaayos ng mga ugnayan bago pumanaw. Kabilang sa mga gawi ang paglalagay sa taong malapit nang mamatay sa tiyak na bahagi ng bahay batay sa kasarian, paghingi ng tawad, paghahati ng ari-arian, at pagbibigay ng huling habilin. Naniniwala rin ang komunidad na ang kamatayan ay maaaring dulot ng iba't ibang sanhi gaya ng karamdaman o sumpa, kaya isinasagawa ang mga ritwal ayon sa kanilang paniniwala upang matiyak ang kaayusan ng mga maiiwan. Ang mga nakatatanda ay may mahalagang papel bilang tagapag-ingat ng tradisyon at tagapayo ng komunidad. Ipinapakita ng pag-aaral na ang mga ritwal ng kamatayan sa Abagusii ay nagsisilbing mekanismo upang mapanatili ang pagkakaisa, at matulungan ang pamilya na tanggapin at maunawaan ang pagkawala ng kanilang mahal sa buhay."}],"isRefs": false},{"head": "Kamatayan","nodes": [{"t": "p","x": "Inilahad sa pag-aaral ni Casinillo (2025), na pinamagatang Mga Pamahiin sa Patay: Isang Pag-aaral sa mga Paniniwala at Persepsiyon ng mga Pilipinong Gen Z, sinuri ang kaalaman ng mga Gen Z hinggil sa mga pamahiin sa patay at ang kanilang impluwensiya sa saloobin at pag-uugali ng kabataan. Ipinapakita ng mga natuklasan na bagaman may kamalayan ang Gen Z sa tradisyonal na pamahiin, ang pagsunod dito ay nag-iiba-iba batay sa personal na karanasan, kulturang pagpapalaki, at kaalamang siyentipiko. Karamihan sa kanila ay hindi na sumusunod sa mga pamahiin dulot ng modernisasyon at may paniniwala na walang katotohanan dahil sa kakulangan ng siyentipikong basehan. Bagaman wala naman talagang siyentipikong basehan ang mga paniniwalang ito, patuloy pa rin itong sinusunod ng iba para sa ikabubuti at ikagiginhawa nila."},{"t": "p","x": "Sa pag-aaral ni Shangzhi Hu (2025) na pinamagatang A Study on Japanese Death Culture: Using the Movie Departures as an Entry Point, ginamit ang pelikulang Departures (Hapon: Okuribito) upang maunawaan ang kultura ng kamatayan sa Japan. Ipinakita sa pelikula ang proseso ng paghahanda sa yumao, mula sa paglilinis at pag-aayos ng katawan hanggang sa kremasyon at ang paglalagak ng abo sa puntod ng pamilya, kalakip ang paglalagay ng ihai memorial tablet bilang simbolo ng patuloy na pag-alala. Tinalakay rin ang impluwensiya ng kasaysayan, lalo na ng kilusang Haibutsu Kishaku noong Panahong Meiji, na nagpabago sa papel ng Budismo, ngunit nanatiling buhay ang mga katutubong gawi tulad ng pagdalaw sa puntod at pagdarasal sa mga dambana. Sa makabagong panahon, mas bukas na ang lipunang Hapones sa pagtalakay sa kamatayan, at nananatiling kremasyon ang pangunahing paraan ng paglilibing. Ipinapakita ng pag-aaral na ang kultura ng kamatayan sa Japan ay patuloy na nagbabago ngunit hindi napuputol sa tradisyon, bagkus ito ay umaangkop sa modernong lipunan habang pinananatili ang paggalang at pagpapahalaga sa alaala ng yumao."}],"isRefs": false},{"head": "Pagbubuntis/Panganganak","nodes": [{"t": "p","x": "Isa pa sa pag-aaral na Paniniwala sa Harô: Reflektibong Pamumuhay ng mga Waraynon (2022), tinalakay ang kaugnayan ng mga paniniwala ng mga Waraynon sa pagbubuntis at mga tradisyon mula sa ibang lalawigan. Ang harô, na tumutukoy sa mga halamang gamot, ay nauugnay sa mga pagkaing ipinagbabawal sa mga buntis na maaring makaapekto sa hitsura ng sanggol, tulad ng magkadikit na saging at karne ng kalabaw. Sa Kalinga, may mataas na paniniwala sa masasamang espiritu, kayat ginagamit ang mga simbolo tulad ng ngipin ng buwaya bilang proteksyon. Ang mga Waraynon ay may sariling paraan ng pag-iingat sa mga buntis laban sa mga espiritu, gamit ang relikyas na may inorasyunang papel. Ang pagsunod sa mga paniniwalang ito ay itinuturing na mahalaga upang matiyak ang ligtas na pagdadalang-tao."},{"t": "p","x": "Ayon sa pag-aaral ni Felisian et al. (2023), na may pamagat Sociocultural Practices and Beliefs during Pregnancy, Childbirth and Postpartum among Indigenous Pastoralist Women of Reproductive Age in Manyara, Tanzania, ang mga paniniwala at sosyokultural na gawain ng mga katutubong pastoralista na kababaihan sa Manyara, Tanzania ay laganap mula sa pagbubuntis hanggang sa postnatal na yugto. Ipinakita ng pag-aaral ang pagkakaroon ng mapanganib na mga gawain, tulad ng paggamit ng halamang gamot para sa paghilab, at ang paglalagay ng mga hindi karaniwang bagay sa birth canal na nagdudulot ng panganib ng impeksiyong puerperal. Sa kabila ng pagtaas ng kamalayan tungkol sa panganib ng panganganak sa bahay, ilan pa rin ang pinipili itong gawin bilang bahagi ng kanilang kultura at tradisyon na naipasa mula sa nakatatanda."}],"isRefs": false},{"head": "Lagom ng Pag-aaral","nodes": [{"t": "p","x": "Ipinapakita ng mga lokal at internasyonal na literatura at pag-aaral na ang pamahiin ay nananatiling mahalagang bahagi ng kultura, tradisyon, at pagkakakilanlan ng iba't ibang komunidad. Binibigyang-diin ang ulat ng Balita Online GMA (2025) at maging ang mga pag-aaral nina Galay et al. (2025), Rosales at Viray (2024), Clacio at Estabaya (2024), at Yuvallos (2023) na ang mga pamahiin ay malalim na nakaugat sa pananaw ng mga Pilipino tungkol sa suwerte, malas, pananampalataya, at mahalagang yugto ng buhay gaya ng kapanganakan, pag-aasawa, pagbubuntis, at kamatayan. Kahit walang sapat na siyentipikong batayan, patuloy pa rin itong sinusunod dahil sa impluwensiya ng pamilya, tradisyon, personal na karanasan, paggalang sa nakakatanda at maging sa positibong dala o epekto nito."}],"isRefs": false},{"head": "Lagom ng Pag-aaral","nodes": [{"t": "p","x": "Kaugnay nito, ipinapakita rin sa mga pag-aaral nina Solis (2022) at Amat (2021) na maging sa mga komunidad ng Tacloban, Waray, at Badjao, ang mga paniniwala at ritwal ay nagsisilbing gabay sa pang-araw-araw na pamumuhay at proteksiyon laban sa masamang espiritu at kapahamakan. Samantala, natuklasan nina Casinillo at Cruz na bagamat naaapektuhan ng modernisasyon at siyentipikong kaalaman ang pananaw ng kabataang henerasyon, hindi tuluyang nawawala ang mga pamahiin. Sa halip, nagbabago lamang ang paraan ng interpretasyon at antas ng pagsunod dito. Makikita rin ang kahalagahan ng pamahiin at ritwal sa iba't ibang kultura. Ayon kina Ibtissam (2025), Shangzhi Hu (2025), Montesa (2024), Kartal et al. (2024), at Bilgiç at Karaahmet (2025), ang mga tradisyunal na paniniwala sa mga bansang tulad ng Japan, Tanzania, Turkey at sa ilang katutubong komunidad ay may kaugnayan sa kamatayan, pagbubuntis, panganganak, at kasal. Ang mga ritwal tulad ng paraan ng paglilibing na tinatawag na kremasyon o ginagawang abo ang yumao, ang paggamit ng pulang belo, pagbubudbod ng trigo o barya, pagsusuot ng bigkis, paglalagay ng rosary sa kamay ng yumao, pag-iwas sa pag-uwi agad mula sa sementeryo, at apatnapung araw na pagdarasal at iba pang simbolikong gawain ay paniniwalang hindi lamang simpleng paniniwala bagkus ito ay nagbibigay ng proteksiyon, kasaganaan, kapayapaan, kapanatagan, paggalang at pagpapahalaga sa alaala ng yumao."}],"isRefs": false},{"head": "Lagom ng Pag-aaral","nodes": [{"t": "p","x": "Katulad ng mga pag-aaral sa Japan at Kenya, at sa pag-aaral ni Nyaoko (2024) na binigyang-diin ang kahalagahan ng mga ritwal sa kamatayan bilang paraan ng pagpapanatili ng mga moral na pagpapahalaga, paggalang sa yumao, at pagkakaisa ng komunidad. Bagamat may ilang paniniwala na maaring walang siyentipikong paliwanag at posibleng makaapekto sa kalusugan, patuloy pa rin itong sinusunod dahil sa impluwensiya ng kultura, pamilya, at kolektibong karanasan ng komunidad."},{"t": "p","x": "Ang mga katuruan ng Kabbalah at tradisyong Hasidic ay nagbibigay ng mas malalim na pag-unawa sa kamatayan at kabilang buhay. Ipinapakita rito na ang pagkawala ng isang mahal sa buhay ay hindi lamang pagtatapos, kundi isang pagkakataon upang magnilay at higit na maunawaan ang kahalagahan ng buhay at pananampalataya. Dagdag pa rito, ipinapakita nina Fliginskikh at Semenova (2022) na ang mga pamahiin ay nagsisilbing babala, paliwanag, at prediksiyon sa mga pangyayari sa buhay ng tao."},{"t": "p","x": "Sa kabuuan, ang pamahiin ay hindi lamang simpleng paniniwala kundi isang bagay na nakaangkla sa kultura, karanasan at pagpapahalaga ng bawat komunidad. Sa kabila ng pagkakaiba-iba ng kultura at relihiyon, may pagkakatulad ang mga komunidad sa pagbibigay-halaga sa mga paniniwala at ritwal, at may malaking impluwensiya sa pananaw at kilos ng mga tao at nanatiling mahalagang bahagi ng kultura at pagkakakilanlan. Gayunpaman, kapansin-pansin na karamihan sa mga pananaliksik ay hindi nagbibigay ng komprehensibong pagpapakahulugan, dahilan ng pagpapatuloy at impluwensiya sa makabagong henerasyon."}],"isRefs": false},{"head": "Kakulangan sa Pananaliksik","nodes": [{"t": "p","x": "Sa umiiral na pag-aaral tungkol sa mga paniniwalang Pilipino, karamihan ay nakatuon lamang sa pangkalahatang kahulugan at impluwensiya nito sa kultura. Bagamat mahalagang bahagi ng kulturang Pilipino ang mga ito, kapansin-pansin na malimit ang may masusing pag-aaral tungkol sa mga pamahiing may kaugnayan sa binyag. Bukod dito, hindi gaanong nabibigyang pansin ang mga tiyak na dahilan kung bakit patuloy na sinusunod ang bawat pamahiin sa kabila ng modernisasyon."},{"t": "p","x": "Sa pagsusuri ng mga umiiral na kultura, mapapansin ding ang pokus ng karamihan sa mga pag-aaral ay ang kabuuang konsepto at kahalagahan ng mga paniniwala bilang bahagi ng kanilang kultura. Gayunpaman, madalang na nabibigyang linaw ang tiyak na kahulugan nito. Hindi rin gaanong naipapaliwanag ang pinagmulan, layunin at mga kadahilanan kung bakit umiiral ang bawat pamahiin sa isang komunidad."}],"isRefs": false},{"head": "Kakulangan sa Pananaliksik","nodes": [{"t": "p","x": "Sa kontekstong internasyonal, limitado rin ang mga pag-aaral hinggil sa pamahiin. Kadalasan, ang mga pananaliksik ay nakasentro lamang sa mga paniniwalang may kaugnayan sa kamatayan, kasal, panganganak at hindi binibigyang diin ang mas malawak na saklaw ng pamahiin bilang isang kultural na penomena. Bukod dito, mas nakatuon ang mga banyagang pag-aaral sa sikolohikal at sosyolohikal na aspeto ng mga paniniwala kaysa sa masusing pagtalakay sa kahulugan, pinagmulan, at implikasyon nito sa pang-araw-araw na pamumuhay."},{"t": "p","x": "Dahil dito, malinaw na may puwang o kakulangan sa mga umiiral na literatura na maaring punan ng kasalukuyang pag-aaral. Layunin ng pananaliksik na ito na hindi lamang tukuyin ang mga umiiral na paniniwala at pamahiin kaugnay ng kamatayan, kasal, binyag, at panganganak kundi pati na rin suriin ang antas ng pagka-unawa ng mga mag-aaral patungkol sa kahulugan, mga kadahilanan sa likod ng pag-iral at impluwensiya sa paghubog ng kaisipan at gawi ng mga mag-aaral sa kanilang pamumuhay. Sa pamamagitan nito makapag-aambag ang pag-aaral na gawing mas komprehensibo at mapalalim ang pag-unawa ng mga mag-aaral sa pamahiin bilang mahalagang bahagi ng kulturang Pilipino."}],"isRefs": false},{"head": "Teoretikal na Balangkas","nodes": [{"t": "p","x": "Ang pag-aaral ay nakatuon sa sagugurang na pagtubod na may kaugnayan sa mahahalagang yugto ng buhay ng isang tao kabilang ang binyag, kasal/pag-aasawa, panganganak/pagbubuntis at ang kamatayan bilang bahagi ng kulturang Pilipino. Upang lubos na maunawaan ang pag-aaral, ginamit ang teoryang Social Learning ni Albert Bandura, Cultural Transmission Theory ni Edward Tylor at Functionalism Theory ni Emile Durkheim."},{"t": "p","x": "Una sa mga teorya ay ang teoryang Social Learning ni Albert Bandura (1977). Ipinaliwanag niya na ang pagkatuto ng mga tao ng bagong ugali, kaalaman, at kasanayan ay nagmumula sa pagmamasid, paggaya, pagmomodelo at pakikipag-interaksyon sa iba. Hindi lamang ito sariling karanasan, kundi pag-unawa sa kilos ng iba."},{"t": "p","x": "Kaugnay nito, maipaliliwanag na ang mga pamahiin o sagugurang na pagtubod ay naipapasa mula sa isang henerasyon patungo sa mga bagong henerasyon sa pamamagitan ng pagmamasid at paggaya sa mga nakatatanda, lalo na mula sa mga ninuno. Sa patuloy na pag-aangkop at pagsasabuhay ng mga nakagawiang kaisipan at tradisyon, ang mga ito ay nagiging bahagi ng kultura, kaugalian at kalaunan ay nagiging matibay na paniniwala ng mga kabataan sa kanilang pamumuhay."}],"isRefs": false},{"head": "Teoretikal na Balangkas","nodes": [{"t": "p","x": "Sa ikalawang teorya, ang Cultural Transmission Theory ni Edward Burnett Tylor (1832-1917), ayon sa teoryang ito ang kultura, paniniwala, pamahiin ay hindi naipapasa sa pamamagitan ng genes o biological na proseso, kundi natututunan at naipapasa mula sa isang henerasyon patungo sa susunod pa sa pamamagitan ng komunikasyon, tradisyon at pakikipag-ugnayan."},{"t": "p","x": "Sa ganitong pananaw maipapakita na ang pamahiin ay isang resulta ng karanasan at patuloy na naipapasa sa loob ng lipunan sa mga kabataan. Ito ay hindi likas na kaalaman ng isang tao mula sa kanyang kapanganakan kundi ito ay unti-unting natutuhan habang siya ay lumalaki sa loob ng pamilya at komunidad sa pamamagitan ng pakikinig ng mga kuwentong sagugurang, pagsunod sa mga nakagawiang pamahiin at pakikibahagi sa mga tradisyonal na gawain. Nagiging bahagi ng kamalayan at buhay ng isang indibidwal ang mga paniniwalang ito. Sa patuloy na pag-uulit at pagsasabuhay ng mga paniniwalang ito, napapanatili at napalalaganap ang kultura sa paglipas ng panahon."}],"isRefs": false},{"head": "Teoretikal na Balangkas","nodes": [{"t": "p","x": "Sa pangatlong konsepto, isinasaalang-alang ang Functionalism Theory ni Emile Durkheim. Ito ay tumitingin sa lipunan bilang isang kumplikadong sistema na binubuo ng mga magkaka-ugnay na bahagi, tulad ng pamilya, edukasyon, relihiyon at iba pang institusyon na nagtutulungan upang mapanatili ang katatagan, kaayusan at solidarity o pagkakaisa ng isang pangkat o lipunan."},{"t": "p","x": "Sa kaugnay na pag-aaral, ipinapahihiwatig ng teoryang ito na ang mga sagugurang na pagtubod ay may ginagampanang papel sa pagpapanatili ng pagkakaisang komunidad. Ang pagsunod sa mga sagugurang na pagtubod ay maaring magsilbing gabay sa pag-uugali ng mga kabataan at magbigay ng pakiramdam ng seguridad at pagkakaisa sa pamamagitan ng sama-samang paniniwala at pagsasagawa ng mga kaalaman, kaugalian at kasanayan. Nagkakaroon ng isang pagkakakilanlan at direksyon ang bawat tao sa lipunan. Kaya naman kahit hindi ito siyentipikong napatutunayan, nananatili ang pamahiin dahil may tungkulin ito na pagpapatibay ng ugnayan at kaayusan sa bawat tao, lalo na sa mga kabataan."}],"isRefs": false},{"head": "Teoretikal na Balangkas","nodes": [{"t": "p","x": "Ang tatlong nabanggit na teorya ay ang mga batayan ng mga mananaliksik sa isinasagawang pag-aaral tungkol sa mga sagugurang na pagtubod sa mga mag-aaral sa ika-10 baitang upang magbigay linaw na ang mga pamahiin ay nagpapatuloy at naipapasa sa kabila ng makabagong henerasyon. Ang balangkas na ito ay nakabatay sa Social Learning Theory ni Albert Bandura, Cultural Transmission Theory ni Edward Burnett Tylor at Functionalism Theory ni Emile Durkheim. Nilinaw ng dayagram na ito kung paano ang kapaligiran, mga ninuno at nakatatanda ay nakatutulong sa pagpapanatili at pagpapalaganap ng mga sagugurang na pagtubod."}],"isRefs": false},{"head": "Konseptwal na Balangkas","nodes": [{"t": "p","x": "Ang pangunahing layunin ng pag-aaral na ito ay matipon at masuri ang mga sagugurang na pagtubod na may kaugnayan sa mahahalagang yugto ng buhay ng tao kabilang ang pagbibinyag, pag-aasawa, pagbubuntis/panganganak at kamatayan, gayundin ang pagsusuri sa antas ng kaalaman at pag-unawa ng mga piling mag-aaral tungkol sa mga paniniwalang ito. Ito ay nakabatay sa Input-Process-Output na Modelo upang malinaw na maipakita ang daloy at kaugnayan ng mga impormasyon sa pag-aaral."},{"t": "h","x": "Input"},{"t": "p","x": "Sagugurang na pagtubod batay sa sumusunod: (a) Kamatayan, (b) Binyag, (c) Pag-aasawa, (d) Pagbubuntis/Panganganak. Antas na kaalaman at pag-unawa ng mga mag-aaral patungkol sa mga sagugurang na pagtubod batay sa sumusunod: (a) Kamatayan, (b) Binyag, (c) Pag-aasawa, (d) Pagbubuntis/Panganganak. Hamon at hadlang sa pagpapanatili ng mga sagugurang na pagtubod."},{"t": "h","x": "Process"},{"t": "p","x": "Paggawa ng listahan ng mga katanungan. Pagsagawa ng isang interbyu o pakikipanayam. Pagtipon ng mga nakalap na datos. Pagtala ng mga nakalap na datos. Pagsusuri ng mga nakalap na datos."},{"t": "h","x": "Output"},{"t": "p","x": "Pagtipon at Pagsuri ng mga Sagugurang na Pagtubod."}],"isRefs": false},{"head": "Katuturan ng mga Katawagang Ginamit","nodes": [{"t": "p","x": "Ang mga sumusunod na mga salita ay binigyang kahulugan batay sa:"},{"t": "h","x": "Sagugurang na Pagtubod"},{"t": "p","x": "Tumutukoy sa mga tradisyonal na paniniwala o pamahiin na naipapasa mula sa isang henerasyon patungo sa susunod bilang bahagi ng kultura — isang paniniwala o gawi na naipasa mula sa mga nakaraang henerasyon; tradisyunal na paniniwala. (Katumbas sa Ingles: traditional belief)"},{"t": "h","x": "Sagugurang"},{"t": "p","x": "Sinauna o tradisyunal; minana mula sa mga ninuno o matagal nang nakasanayang kaugalian. (Katumbas sa Ingles: traditional/ancient)"},{"t": "h","x": "Pagtubod"},{"t": "p","x": "Tumutukoy sa paniniwala, tradisyon o pamahiin na sinusunod ng mga tao bilang bahagi ng kanilang kultura at nakasanayang gawain."},{"t": "h","x": "Pagtipon"},{"t": "p","x": "Ang pagsasama-sama o pagkolekta ng mga tao, salita, impormasyon, o ideya mula sa iba't ibang pinagkukunan."},{"t": "h","x": "Mag-aaral"},{"t": "p","x": "Tumutukoy sa isang indibidwal na kasali sa isang paaralan o institusyon at tumatanggap ng kaalaman."}],"isRefs": false},{"head": "Katuturan ng mga Katawagang Ginamit","nodes": [{"t": "h","x": "Gurang"},{"t": "p","x": "Tumutukoy sa matatandang tao o nakakatanda sa isang komunidad na may malawak na karanasan, kaalaman at karunungan."},{"t": "h","x": "Kultura"},{"t": "p","x": "Mga karaniwang paniniwala, kaugalian, at materyal na katangian ng isang pangkat na lahi, relihiyon, o lipunan."},{"t": "h","x": "Pamahiin"},{"t": "p","x": "(o superstition) Isang paniniwala o paraan ng pag-uugali na nakabatay sa takot sa hindi alam, paniniwala sa mahika o suwerte, at maling konsepto ng sanhi at bunga."},{"t": "h","x": "Patay/Kamatayan"},{"t": "p","x": "Ang permanenteng pagtigil ng lahat ng mahahalagang gawain ng katawan."},{"t": "h","x": "Binyag"},{"t": "p","x": "Isang sakramento sa Kristiyanismo na ginagamitan ng tubig bilang simbolo ng pagtanggap ng isang tao sa komunidad ng mga Kristiyano."},{"t": "h","x": "Kasal/Pag-aasawa"},{"t": "p","x": "Ang kalagayan ng dalawang taong nagkakaisa bilang mag-asawa sa isang kasunduan o relasyon na kinikilala ng batas."}],"isRefs": false},{"head": "Katuturan ng mga Katawagang Ginamit","nodes": [{"t": "h","x": "Pagbubuntis"},{"t": "p","x": "Ang kalagayan ng isang babaeng may dinadalang sanggol sa kanyang sinapupunan."},{"t": "h","x": "Panganganak"},{"t": "p","x": "Ang kilos o proseso ng pagsilang ng sanggol mula sa sinapupunan ng ina."},{"t": "h","x": "Website"},{"t": "p","x": "Isang grupo o koleksyon ng magkakaugnay na mga pahina (webpages) na naglalaman ng impormasyon, karaniwang pinapanatili ng isang tao, grupo, o organisasyon, at matatagpuan sa internet. Ito ay nagsisilbing lokasyon sa World Wide Web na nagbibigay ng datos tungkol sa isang partikular na paksa."},{"t": "h","x": "Modernisasyon"},{"t": "p","x": "Ang proseso ng paggawa o pag-aangkop ng isang bagay sa makabagong pangangailangan o pamantayan, o ang paggawa nito upang maging modern."}],"isRefs": false},{"head": "Katuturan ng mga Katawagang Ginamit (Operasyunal)","nodes": [{"t": "p","x": "Ang mga sumusunod na mga salita ay binigyang kahulugan batay sa kahulugang operasyunal, ayon sa gamit nito sa pag-aaral na ito:"},{"t": "h","x": "Sagugurang na Pagtubod"},{"t": "p","x": "Sa pag-aaral na ito, tumutukoy ito sa mga pamahiin na may kaugnayan tungkol sa patay, kasal at pagbubuntis/panganganak."},{"t": "h","x": "Sagugurang"},{"t": "p","x": "Tumutukoy sa mga sinaunang paniniwala o gawi na minana mula sa mga ninuno o matatanda."},{"t": "h","x": "Pagtubod"},{"t": "p","x": "Mga paniniwala na may kaugnayan sa kasal, binyag, pagbubuntis/panganganak at kamatayan."},{"t": "h","x": "Pagtipon"},{"t": "p","x": "Sa pananaliksik na ito, tumutukoy ito sa paglikom ng mga impormasyon ng mga datos at impormasyon ng mga sagugurang na pagtubod na makukuha mula sa mga matatanda."}],"isRefs": false},{"head": "Katuturan ng mga Katawagang Ginamit (Operasyunal)","nodes": [{"t": "h","x": "Mag-aaral"},{"t": "p","x": "Tumutukoy sa respondente na sasagot sa mga talatanungan na magiging batayan ng pag-aaral na ito."},{"t": "h","x": "Gurang"},{"t": "p","x": "Tumutukoy sa mga respondente ng pag-aaral na may malalim na kaalaman sa mga sagugurang na pagtubod."},{"t": "h","x": "Kultura"},{"t": "p","x": "Tumutukoy ito sa paniniwala, gawi ng mga mamamayan sa Lungsod ng Ligao na konektado sa mga sagugurang na pagtubod."},{"t": "h","x": "Pamahiin"},{"t": "p","x": "Tumutukoy sa mga paniniwala ng tao bilang proteksyon upang makaiwas sa masamang kapalaran."},{"t": "h","x": "Patay/Kamatayan"},{"t": "p","x": "Tumutukoy sa paniniwala at gawi ng pamilya at komunidad mula sa burol at pagkatapos ng libing."}],"isRefs": false},{"head": "Katuturan ng mga Katawagang Ginamit (Operasyunal)","nodes": [{"t": "h","x": "Binyag"},{"t": "p","x": "Sa pag-aaral na ito, tumutukoy ito sa tradisyon na ginagawa ng mga tao bago, habang at pagkatapos ng binyag, bilang bahagi ng kultura ng isang komunidad."},{"t": "h","x": "Kasal/Pag-aasawa"},{"t": "p","x": "Tumutukoy ito sa paniniwala na dapat isagawa ng mag-asawa bago, habang at pagkatapos ng kasal."},{"t": "h","x": "Pagbubuntis"},{"t": "p","x": "Tumutukoy sa mga gawi na dapat at hindi dapat ginagawa ng isang nagdadalang-tao."},{"t": "h","x": "Panganganak"},{"t": "p","x": "Tumutukoy ito sa paniniwala bago at pagkatapos manganak ang isang ina."},{"t": "h","x": "Website"},{"t": "p","x": "Tumutukoy ito sa online sanggunian na magsisilbing output ng pag-aaral na ito na naglalaman ng mga datos at impormasyon tungkol sa mga sagugurang na pagtubod."},{"t": "h","x": "Modernisasyon"},{"t": "p","x": "Tumutukoy sa pagbabagong dulot ng makabagong panahon na maaring makaapekto sa pagpapanatili ng mga sagugurang na pagtubod."}],"isRefs": false},{"head": "Sanggunian","nodes": [{"t": "p","x": "Akin, B., & Aydınlık, Ö. (2024). The effect of superstitions during pregnancy on quality of life and pregnancy adjustment. https://pmc.ncbi.nlm.nih.gov/articles/PMC12021312/"},{"t": "p","x": "Amat, A. B. (2021). Pamahiin sa kamatayan: Katutubong konsepto ng mga Taclobanon. https://research.lpubatangas.edu.ph/wp-content/uploads/2022/02/APJMSD-2021-01-014a.pdf"},{"t": "p","x": "Atmaca, E., et al. (2024). Metaphorical language and function of the bridal pick-up ritual in Anatolian traditional weddings with its origin and reflections. https://avesis.akdeniz.edu.tr/yayin/e92e8a65-94b9-414f-abcd-af3bec54b507/metaphorical-language-and-function-of-the-bridal-pick-up-ritual-in-anatolian-traditional-weddings-with-its-origin-and-reflections"},{"t": "p","x": "Balita Online. (2024). Alamin: Iba't ibang pamahiin sa burol at libing ng patay. https://balita.mb.com.ph/2024/10/21/alamin-ibat-ibang-pamahiin-sa-burol-at-libing-ng-patay/"}],"isRefs": true},{"head": "Sanggunian","nodes": [{"t": "p","x": "Bilgiç, F., & Yildiz, K. A. (2025). Superstitions and practices of women in the perinatal period in Turkey: A cross-sectional study. https://pmc.ncbi.nlm.nih.gov/articles/PMC11918846/"},{"t": "p","x": "Casinillo, J. (2025). Mga pamahiin sa patay: Isang pag-aaral sa mga paniniwala at persepsyon ng mga Pilipinong Gen Z. https://consortiacademia.org/wp-content/uploads/2023/v14i12/25165_final.pdf"},{"t": "p","x": "Clacio, A., & Estabaya, M. (2024). Pananalig sa papel ng suwerte at malas: Ang ligaya ng lotto sa pag-asa ng mga Pilipino. International Journal of Multidisciplinary Educational Research and Innovation, 2(1), 44–62. https://doi.org/10.17613/hqfg-rn02"},{"t": "p","x": "Cruz, W. M. (2025). Pagsusuri sa mga gawi at paniniwalang Kapampangan batay sa digital na koleksiyon ni Henry Otley Beyer sa Pambansang Aklatan ng Pilipinas. https://www.ejournals.ph/article.php?id=30070"}],"isRefs": true},{"head": "Sanggunian","nodes": [{"t": "p","x": "Felisian, S., Mushy, S. E., Tarimo, E. A., et al. (2023). Sociocultural practices and beliefs during pregnancy, childbirth, and postpartum among indigenous pastoralist women of reproductive age in Manyara, Tanzania: A descriptive qualitative study. BMC Women's Health, 23, 123. https://link.springer.com/article/10.1186/s12905-023-02277-4"},{"t": "p","x": "Gandeza, C. D., et al. (2023). Superstitious beliefs: Unveiling truth. https://thercsas.com/wp-content/uploads/2023/05/rcsas3052023003.pdf"},{"t": "p","x": "Grey, E. J. (2020). Cultural beliefs and practices of ethnic Filipinos: An ethnographic study. https://research-advances.org/index.php/RAJMSS/article/view/277"},{"t": "p","x": "Ibtissam, H. (2025). Death and the afterlife in Jewish thought: Between tradition, belief, and Kabbalistic esotericism. https://www.davidpublisher.com/Public/uploads/Contribute/690974eaee901.pdf"}],"isRefs": true},{"head": "Sanggunian","nodes": [{"t": "p","x": "Montessa, E. D. (2024). Grief and loss: Catholic Filipino traditions. https://digitalcommons.wku.edu/ijfcn/vol10/iss1/6/"},{"t": "p","x": "Nyaoko, O. D. (2024). The role of death and burial rituals in inculcating moral and cultural values in Abagusii community of Western Kenya. https://rsisinternational.org/journals/ijriss/articles/the-role-of-death-and-burial-rituals-in-inculcating-moral-and-cultural-values-in-abagusii-community-of-western-kenya/"},{"t": "p","x": "Rosales, A., & Viray, J. R. (2024). Filipino culture and values: Bases for pandemic response. https://philpapers.org/rec/VIRFCA"},{"t": "p","x": "Solis, J. (2022). Ang konsepto sa kalluman ng Badjao: Pagsilang hanggang pagkamatay. https://consortiacademia.org/wp-content/uploads/2020/v11i14/b018_ijrsfnal.pdf"}],"isRefs": true},{"head": "Sanggunian","nodes": [{"t": "p","x": "Yuvallos, A. (2023). A beginner's guide to Filipino superstitions: Funeral edition. https://www.nationthailand.com/world/asean/40030183"}],"isRefs": true},{"head": "Kabanata III","nodes": [{"t": "h","x": "Metodolohiya"},{"t": "p","x": "Sa kabanatang ito, inilahad ng mga mananaliksik ang mga pamamaraang ginamit sa pag-aaral. Kabilang dito ang disenyo ng pananaliksik, pamaraan ng pagpili ng mga respondente, instrumento ng pananaliksik, at ang paraan ng pagkalap ng datos."},{"t": "h","x": "Disenyo ng Pananaliksik"},{"t": "p","x": "Ang pag-aaral na ito ay gagamit ng Mixed Method na disenyo ng pananaliksik upang makakuha ng mas malawak at mas malalim na pag-unawa sa paksang pinag-aaralan. Ito ay pinagsamang kwalitatibo at kwantitatibong pamamaraan. Ayon kay Crossman (2020), ang kwalitatibong pananaliksik ay isang anyo ng pananaliksik sa agham panlipunan na nangangalap at sumusuri ng mga datos na hindi nakabatay sa bilang. Layunin nitong maunawaan ang kahulugan ng mga datos, karanasan, at pananaw ng mga kalahok. Kaugnay ito sa pag-aaral dahil makatutulong ito upang higit na maunawaan ang kaalaman, pananaw, at pag-unawa ng mga mag-aaral tungkol sa mga sagugurang na pagtubod."}],"isRefs": false},{"head": "Disenyo ng Pananaliksik","nodes": [{"t": "p","x": "Binigyang-diin din ni John W. Creswell (2013) na sa kwalitatibong pananaliksik, mahalaga ang natural na setting at direktang pakikipag-ugnayan ng mananaliksik sa mga kalahok sa pamamagitan ng mga pamamaraan tulad ng pagmamasid at pakikipanayam. Makatutulong ito sa pagkuha ng mas malalim na paliwanag tungkol sa mga sagugurang na pagtubod mula sa mga mag-aaral at nakatatanda."},{"t": "p","x": "Samantala, gagamitin din ang kwantitatibong pamamaraan upang makalikom at masukat ang numerikal na datos tungkol sa antas ng kaalaman ng mga mag-aaral hinggil sa mga sagugurang na pagtubod. Ayon kay Karl Pearson, ang kwantitatibong pananaliksik ay nakatuon sa pagsukat at pagsuri ng numerical na datos gamit ang estatistikal na pamamaraan upang matukoy ang mga ugnayan, pagkakaiba at pattern sa mga baryabol."}],"isRefs": false},{"head": "Disenyo ng Pananaliksik","nodes": [{"t": "p","x": "Kaugnay ito sa pag-aaral sa pagsuri ng antas ng kaalaman ng mga mag-aaral tungkol sa bawat sagugurang na pagtubod o pamahiin na may kaugnayan sa yugto ng buhay ng isang tao. Si Francis Galton naman ay nagbigay ng malaking ambag sa pag-unlad ng kwantitatibong pananaliksik sa pamamagitan ng paggamit ng pagsukat at estatistika upang maitala at masuri ang mga katangian at pagkakaiba ng mga tao. Kaugnay ito sa pag-aaral dahil gagamit ng pagsukat at estatistika upang matukoy ang antas ng kaalaman ng mga mag-aaral sa Ika-10 baitang tungkol sa mga sagugurang na pagtubod. Layunin ng Mixed Method na disenyo na maitala ang mga sagugurang na pagtubod at masuri ang antas ng kaalaman ng mag-aaral hinggil dito. Ang mga nakalap na datos ay itatala, bibilangin, at susuriin gamit ang angkop na pamamaraang estatistikal upang makabuo ng numerikal na resulta."}],"isRefs": false},{"head": "Pamamaraan ng Pagpili ng Respondente","nodes": [{"t": "p","x": "Sa pag-aaral na ito, gagamitin ang stratified sampling bilang paraan ng pagpili ng mga respondente. Pinili ang pamamaraang ito upang matiyak o malaman kung ang mga kalahok ay may sapat na kaalaman at karanasan hinggil sa mga sagugurang na pagtubod."},{"t": "p","x": "Ang mga napiling respondente ay binubuo ng walumpu (80) na mag-aaral mula sa Ligao National High School. Sila ay pinili batay sa kanilang karanasan, paniniwala, at pagiging bahagi ng komunidad."},{"t": "p","x": "Ang nasabing paaralan ay napili dahil sila ang nagkamit ng unang pwesto sa “Padunungan 2026”, kung saan ginawaran ang paaralan dahil sa ipinakitang kahusayan at isa rin sa may pinakamaraming populasyon ng mga mag-aaral sa Lungsod ng Ligao, kung saan sa bawat seksyon ay pipili ng isa o dalawang respondente sa pamamagitan ng paggamit ng stratified sampling. Sa paraang ito, mas naging patas at angkop ang pagpili ng mga respondente na gagamitin sa kabuuang pananaliksik."}],"isRefs": false},{"head": "Instrumento ng Pananaliksik","nodes": [{"t": "p","x": "Ang instrumentong gagamitin sa pananaliksik na ito ay talatanungan na ipamamahagi sa mga piling mag-aaral sa piling paaralan; sila ang mga respondente ng magiging pag-aaral tungkol sa sagugurang na pagtubod. Layunin nitong masukat ang kanilang kaalaman sa pamahiin ng Ligao at makalikom ng isang obhetibo at makabuluhang impormasyon hinggil sa kanilang kaalaman, pananaw, at karanasan kaugnay sa sagugurang na pagtubod. Ang mga mananaliksik ay maghahanda ng maayos at sistematikong talatanungan na binubuo ng sampung (10) pamahiin na sinusunod sa bawat yugto ng buhay ng tao kabilang ang binyag, kasal/pag-aasawa, panganganak, pagbubuntis at kamatayan."}],"isRefs": false},{"head": "Instrumento ng Pananaliksik","nodes": [{"t": "p","x": "Binubuo ito ng maayos at madaling maunawaang mga tanong. Gagamitin dito ang parehong bukas at saradong tanong upang mabigyan ng pagkakataon ang mga respondente na maipakita ang antas ng kanilang kaalaman at maipahayag nang maayos ang kanilang mga sagot at opinyon. Ang mga tanong ay maingat na binuo at sinikap na ang bawat tanong ay inalisa ng tagapagsuri nang maayos upang matiyak na nakatuon ang mga ito sa layunin ng pag-aaral patungkol sa sagugurang na pagtubod. Ang mga nakalap na datos mula sa talatanungan ay maingat na titipunin, itatala, aayusin, at susuriin upang magsilbing batayan sa pagbuo ng resulta, interpretasyon, at konklusyon sa pananaliksik."}],"isRefs": false},{"head": "Pamamaraan ng Pagkalap ng Datos","nodes": [{"t": "p","x": "Ang pag-aaral na ito ay gagamit ng Mixed Method na disenyo ng pananaliksik. Gagamit ito ng kwalitatibong pamamaraan sa pagtipon ng mga sagugurang na pagtubod at kwantitatibong pamamaraan naman sa pagsusuri ng antas ng kaalaman ng mga mag-aaral hinggil dito."},{"t": "p","x": "Sa kwalitatibong bahagi ng pag-aaral, magsasagawa ang mga mananaliksik ng pagpapatibay (validation) ng mga nakalap na datos mula sa internet sa pamamagitan ng pakikipanayam sa mga piling nakatatanda na may sapat na kaalaman tungkol sa mga sagugurang na pagtubod. Ihaharap sa kanila ang mga nakuhang impormasyon upang matiyak kung ang mga ito ay tama, angkop, at naaayon sa kanilang kaalaman at karanasan."}],"isRefs": false},{"head": "Pamamaraan ng Pagkalap ng Datos","nodes": [{"t": "p","x": "Hihingan din sila ng karagdagang pananaw, paliwanag, at mga ideya hinggil sa mga sagugurang na pagtubod upang higit na mapalalim at mapagtibay ang mga datos ng pag-aaral. Bilang bahagi rin ng kwalitatibong pamamaraan, maglalaman ang talatanungang ipamamahagi sa mga mag-aaral ng isang bukas na tanong (open-ended question) na naglalayong malaman ang kanilang sariling kaalaman, pananaw, at pag-unawa tungkol sa mga sagugurang na pagtubod. Sa pamamagitan nito, magkakalap ang mga mananaliksik ng mas malalim, patas, at kritikal na mga ideya mula sa bawat respondente na magsisilbing karagdagang batayan sa pagsusuri ng pag-aaral."},{"t": "p","x": "Samantala, sa kwantitatibong bahagi ng pag-aaral, magsasagawa ng sarbey ang mga mananaliksik sa mga piling mag-aaral mula sa Ligao National High School upang matukoy ang antas ng kanilang kaalaman tungkol sa mga sagugurang na pagtubod."}],"isRefs": false},{"head": "Pamamaraan ng Pagkalap ng Datos","nodes": [{"t": "p","x": "Gagamitin ang talatanungan o questionnaire bilang pangunahing instrumento sa pangangalap ng datos. Bago isagawa ang pagbabahagi ng talatanungan sa mga respondente, magbibigay muna ng liham-pahintulot ang mga mananaliksik sa mga kinauukulang opisyal ng napiling paaralan upang matiyak ang maayos at legal na pagsasagawa ng pananaliksik. Titiyakin din ng mga mananaliksik na ang mga impormasyon at sagot ng respondente ay mananatiling kumpidensiyal. Pagkatapos makalap at matipon ang lahat ng datos, susuriin at bibigyang-interpretasyon naman ito gamit ang kwalitatibo at kwantitatibong pamamaraan upang magkaroon ng mas malalim at masusing pag-unawa sa pag-aaral."}],"isRefs": false},{"head": "Istatistikal na Pagsusuri ng Datos","nodes": [{"t": "p","x": "Sa pag-aaral na ito, gagamitin ang porsyento (percentage) upang masuri ang mga nakalap na datos mula sa mga respondente. Gagamitin ito upang matukoy ang bahagdan ng mga mag-aaral na may kaalaman sa mga sagugurang na pagtubod na nakapaloob sa talatanungan. Ang mga sagot ng walumpu (80) na respondente ay bibilangin at itatala ayon sa kanilang mga kasagutan. Matapos nito, ang mga mananaliksik ay itatala at kakalkulahin ang mga kasagutan upang matukoy ang bahagdan ng mga respondente na may kaalaman na at wala pa sa bawat sagugurang na pagtubod. Ang mga resulta ay ilalahad sa talahanayan at gagamitin bilang batayan sa pagsusuri at interpretasyon ng mga nakalap na datos."},{"t": "h","x": "Pormulang Ginamit"},{"t": "p","x": "P = (f ÷ n) × 100, kung saan: P – Porsyento; f – Bilang ng tugon; n – Kabuuang bilang ng respondente."}],"isRefs": false},{"head": "Pahina ng Arkibo","nodes": [{"t": "p","x": "Ang pahinang ito ay bahagi ng digital na arkibo ng Paham sa Filipino at nagsisilbing espasyo para sa patuloy na pagbabalik, pagbasa, at pagninilay sa mga sagugurang na pagtubod na nakatala sa pag-aaral."}],"isRefs": false}];
+const TOTAL = PAGES.length;
+const landingRemoved = true;
+const viewerEl = document.getElementById('viewer');
+const stageEl = document.getElementById('stage');
+const bookWrap = document.getElementById('bookWrap');
+const bookEl = document.getElementById('book');
+const leftEl = document.getElementById('leftPage');
+const rightEl = document.getElementById('rightPage');
+const singleEl = document.getElementById('singlePage');
+const turnR = document.getElementById('turnSheetR');
+const turnL = document.getElementById('turnSheetL');
+const turnFrontR = document.getElementById('turnFrontR');
+const turnBackR = document.getElementById('turnBackR');
+const turnFrontL = document.getElementById('turnFrontL');
+const turnBackL = document.getElementById('turnBackL');
+const pageSlider = document.getElementById('pageSlider');
+const pageRange = document.getElementById('pageRange');
+const totalPagesEl = document.getElementById('totalPages');
+const landingEl = document.getElementById('landing');
+const openBtn = document.getElementById('openBook');
+const thumbPanel = document.getElementById('thumbPanel');
+const thumbGrid = document.getElementById('thumbGrid');
+const searchPanel = document.getElementById('searchPanel');
+const searchInput = document.getElementById('searchInput');
+const searchResults = document.getElementById('searchResults');
+const toastEl = document.getElementById('toast');
+const autoplayBtn = document.getElementById('autoplayBtn');
+const soundBtn = document.getElementById('soundBtn');
+const fullscreenBtn = document.getElementById('fullscreenBtn');
+
+const isMobile = () => window.matchMedia('(max-width:880px)').matches;
+let index = 0;
+let busy = false;
+let zoomLevel = 1;
+let autoplayTimer = null;
+let soundOn = false;
+let toastTimer = 0;
+
+function escapeHtml(s){
+  return String(s).replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+}
+function safeUrl(text){
+  const m = text.match(/https?:\/\/\S+/);
+  return m ? m[0].replace(/[)\],.;]+$/,'') : null;
+}
+function renderPage(page, num, extraClass=''){
+  const el = document.createElement('div');
+  el.className = `page-inner ${extraClass}`;
+  const run = document.createElement('div');
+  run.className='running';
+  run.textContent = page.head || 'Paham sa Filipino';
+  const h = document.createElement('div');
+  h.className='page-head';
+  h.textContent = page.head || 'Paham sa Filipino';
+  const body = document.createElement('div');
+  body.className='page-body';
+  for(const node of page.nodes){
+    if(node.t==='h'){
+      const hh=document.createElement('h4'); hh.textContent=node.x; body.appendChild(hh);
+    }else{
+      const p=document.createElement('p');
+      const raw=node.x;
+      const url=safeUrl(raw);
+      if(url){
+        const before=raw.slice(0,raw.indexOf(url));
+        const after=raw.slice(raw.indexOf(url)+url.length);
+        p.append(document.createTextNode(before));
+        const a=document.createElement('a'); a.href=url; a.target='_blank'; a.rel='noopener'; a.textContent=url;
+        p.append(a,document.createTextNode(after));
+      }else{
+        p.textContent=raw;
+      }
+      body.appendChild(p);
+    }
+  }
+  const f=document.createElement('div'); f.className='folio';
+  const fn=document.createElement('span'); fn.className='folio-num'; fn.textContent=num;
+  f.appendChild(fn);
+  el.append(run,h,body,f);
+  return el;
+}
+function putPage(el, page, num){
+  el.innerHTML='';
+  const inner=renderPage(page,num,page.isRefs?'is-refs':'');
+  el.appendChild(inner);
+  el.classList.toggle('is-refs',!!page.isRefs);
+}
+function currentVisiblePage(){
+  return isMobile() ? index+1 : Math.min(TOTAL,index+1);
+}
+function updatePageIndicator(){
+  const pageNo = Math.max(1, Math.min(TOTAL, currentVisiblePage()));
+  pageSlider.value = pageNo;
+  pageRange.value = pageNo;
+  const pct = TOTAL>1 ? ((pageNo-1)/(TOTAL-1))*100 : 0;
+  pageRange.style.setProperty('--pct', pct+'%');
+}
+function updateThumbActive(){
+  const cards = thumbGrid.children;
+  for(let i=0;i<cards.length;i++) cards[i].classList.toggle('active', i===index);
+}
+function buildThumbnails(){
+  thumbGrid.innerHTML='';
+  const frag = document.createDocumentFragment();
+  PAGES.forEach((p,i)=>{
+    const item=document.createElement('div');
+    item.className='thumb-item'+(i===index?' active':'');
+    const card=document.createElement('div');
+    card.className='thumb-card';
+    const snippet=(p.nodes[0]&&p.nodes[0].x)||'';
+    card.innerHTML = '<b>'+escapeHtml(p.head||'')+'</b>'+escapeHtml(snippet.slice(0,150));
+    const label=document.createElement('span');
+    label.textContent=(i+1)+'. '+(p.head||'Pahina '+(i+1));
+    item.append(card,label);
+    item.addEventListener('click',()=>{ stopAutoplay(); quickJump(i); closeThumbs(); });
+    frag.appendChild(item);
+  });
+  thumbGrid.appendChild(frag);
+}
+function refresh(){
+  if(isMobile()){
+    leftEl.style.display='none'; rightEl.style.display='none'; singleEl.style.display='block';
+    putPage(singleEl,PAGES[index],index+1);
+  }else{
+    leftEl.style.display='block'; rightEl.style.display='block'; singleEl.style.display='none';
+    const left=index % 2 === 0 ? index : Math.max(0,index-1);
+    const right=Math.min(TOTAL-1,left+1);
+    putPage(leftEl,PAGES[left],left+1); putPage(rightEl,PAGES[right],right+1);
+  }
+  updatePageIndicator();
+  updateThumbActive();
+  history.replaceState(null,'','#p='+(index+1));
+}
+function fillSheet(sheet,front,back,frontEl,backEl){
+  frontEl.innerHTML=''; backEl.innerHTML='';
+  frontEl.appendChild(renderPage(front,front.num||1));
+  backEl.appendChild(renderPage(back,back.num||1));
+}
+function makeSheetPage(page,num){
+  return {...page,num};
+}
+function playFlipSound(){
+  if(!soundOn) return;
+  try{
+    const ctx = window.__ac || (window.__ac = new (window.AudioContext||window.webkitAudioContext)());
+    const dur=.15, n=Math.floor(ctx.sampleRate*dur);
+    const buf=ctx.createBuffer(1,n,ctx.sampleRate);
+    const data=buf.getChannelData(0);
+    for(let i=0;i<n;i++) data[i]=(Math.random()*2-1)*(1-i/n);
+    const src=ctx.createBufferSource(); src.buffer=buf;
+    const filt=ctx.createBiquadFilter(); filt.type='highpass'; filt.frequency.value=900;
+    const gain=ctx.createGain(); gain.gain.value=.16;
+    src.connect(filt).connect(gain).connect(ctx.destination);
+    src.start();
+  }catch(e){}
+}
+function showToast(msg){
+  toastEl.textContent=msg;
+  toastEl.classList.add('show');
+  clearTimeout(toastTimer);
+  toastTimer=setTimeout(()=>toastEl.classList.remove('show'),2200);
+}
+function next(){
+  if(busy) return;
+  if(isMobile()){
+    if(index>=TOTAL-1) return;
+    busy=true;
+    fillSheet(turnR,makeSheetPage(PAGES[index],index+1),makeSheetPage(PAGES[index+1],index+2),turnFrontR,turnBackR);
+    turnR.classList.remove('anim'); void turnR.offsetWidth; playFlipSound(); turnR.classList.add('anim');
+    setTimeout(()=>{index++; refresh(); turnR.classList.remove('anim'); busy=false},360);
+  }else{
+    if(index+2>=TOTAL) return;
+    busy=true;
+    const right=index+1;
+    fillSheet(turnR,makeSheetPage(PAGES[right],right+1),makeSheetPage(PAGES[right+1],right+2),turnFrontR,turnBackR);
+    turnR.classList.remove('anim'); void turnR.offsetWidth; playFlipSound(); turnR.classList.add('anim');
+    setTimeout(()=>{index+=2; refresh(); turnR.classList.remove('anim'); busy=false},360);
+  }
+}
+function prev(){
+  if(busy) return;
+  if(isMobile()){
+    if(index<=0) return;
+    busy=true;
+    fillSheet(turnL,makeSheetPage(PAGES[index],index+1),makeSheetPage(PAGES[index-1],index),turnFrontL,turnBackL);
+    playFlipSound(); turnL.classList.add('anim','left');
+    setTimeout(()=>{index--; refresh(); turnL.classList.remove('anim','left'); busy=false},360);
+  }else{
+    if(index<=0) return;
+    busy=true;
+    const left=Math.max(0,index-1);
+    const back=Math.max(0,left-1);
+    fillSheet(turnL,makeSheetPage(PAGES[left],left+1),makeSheetPage(PAGES[back],back+1),turnFrontL,turnBackL);
+    playFlipSound(); turnL.classList.add('anim','left');
+    setTimeout(()=>{index=Math.max(0,index-2); refresh(); turnL.classList.remove('anim','left'); busy=false},360);
+  }
+}
+function quickJump(target){
+  if(busy) return;
+  const desired = Math.max(0, Math.min(TOTAL-1, Number(target)));
+  const finalIndex = isMobile() ? desired : (desired%2===0 ? desired : desired-1);
+  if(finalIndex === index) return;
+  busy = true;
+  bookEl.classList.add('quick-fade');
+  setTimeout(()=>{
+    index = finalIndex;
+    refresh();
+    requestAnimationFrame(()=>{
+      bookEl.classList.remove('quick-fade');
+      setTimeout(()=>{busy=false},160);
+    });
+  },140);
+}
+function jumpTo(target, animate=true){
+  const desired = Math.max(0, Math.min(TOTAL-1, Number(target)));
+  const finalIndex = isMobile() ? desired : (desired%2===0 ? desired : desired-1);
+  if(!animate || finalIndex === index || busy){
+    index = finalIndex;
+    refresh();
+    return;
+  }
+  const direction = finalIndex > index ? 1 : -1;
+  let steps = isMobile() ? Math.abs(finalIndex-index) : Math.abs(finalIndex-index)/2;
+  steps = Math.min(steps, 8);
+
+  busy = true;
+  let completed = 0;
+
+  const doOne = () => {
+    if(completed >= steps){
+      index = finalIndex;
+      refresh();
+      busy = false;
+      return;
+    }
+    if(direction > 0){
+      const nextIndex = isMobile() ? index+1 : index+2;
+      if(nextIndex > TOTAL-1){ busy=false; return; }
+      const frontNum = nextIndex-1, backNum = nextIndex;
+      fillSheet(turnR, makeSheetPage(PAGES[frontNum], frontNum+1), makeSheetPage(PAGES[backNum], backNum+1), turnFrontR, turnBackR);
+      turnR.classList.remove('anim'); void turnR.offsetWidth; playFlipSound(); turnR.classList.add('anim');
+      setTimeout(()=>{
+        index = nextIndex; completed++; refresh(); turnR.classList.remove('anim');
+        requestAnimationFrame(doOne);
+      },360);
+    }else{
+      const prevIndex = isMobile() ? index-1 : index-2;
+      if(prevIndex < 0){ busy=false; return; }
+      const frontIndex = isMobile() ? index : Math.max(0,index-1);
+      const backIndex = Math.max(0,prevIndex);
+      fillSheet(turnL, makeSheetPage(PAGES[frontIndex], frontIndex+1), makeSheetPage(PAGES[backIndex], backIndex+1), turnFrontL, turnBackL);
+      playFlipSound(); turnL.classList.add('anim','left');
+      setTimeout(()=>{
+        index = prevIndex; completed++; refresh(); turnL.classList.remove('anim','left');
+        requestAnimationFrame(doOne);
+      },360);
+    }
+  };
+  doOne();
+}
+
+function stopAutoplay(){
+  if(!autoplayTimer) return;
+  clearInterval(autoplayTimer); autoplayTimer=null;
+  autoplayBtn.innerHTML = '<svg viewBox="0 0 24 24"><polygon points="6,4 20,12 6,20" fill="currentColor" stroke="none"/></svg>';
+  autoplayBtn.classList.remove('active');
+}
+function toggleAutoplay(){
+  if(autoplayTimer){ stopAutoplay(); return; }
+  autoplayBtn.innerHTML = '<svg viewBox="0 0 24 24"><rect x="6" y="4" width="4" height="16" fill="currentColor" stroke="none"/><rect x="14" y="4" width="4" height="16" fill="currentColor" stroke="none"/></svg>';
+  autoplayBtn.classList.add('active');
+  autoplayTimer = setInterval(()=>{
+    if(index>=TOTAL-1){ stopAutoplay(); return; }
+    next();
+  }, 2800);
+}
+function toggleSound(){
+  soundOn = !soundOn;
+  soundBtn.innerHTML = soundOn ? '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 9v6h4l5 4V5L8 9H4z" fill="currentColor" stroke="none"/><path d="M17 8a5 5 0 010 8"/><path d="M19.5 5.5a9 9 0 010 13"/></svg>' : '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 9v6h4l5 4V5L8 9H4z" fill="currentColor" stroke="none"/><line x1="16" y1="9" x2="22" y2="15"/><line x1="22" y1="9" x2="16" y2="15"/></svg>';
+  soundBtn.classList.toggle('active', soundOn);
+}
+function toggleFullscreen(){
+  if(!document.fullscreenElement){
+    (viewerEl.requestFullscreen ? viewerEl.requestFullscreen() : Promise.resolve()).catch(()=>{});
+  }else{
+    document.exitFullscreen && document.exitFullscreen();
+  }
+}
+document.addEventListener('fullscreenchange', ()=>{
+  fullscreenBtn.classList.toggle('active', !!document.fullscreenElement);
+});
+function setZoom(level){
+  zoomLevel = Math.max(1, Math.min(3, level));
+  bookWrap.classList.remove('zoom-2','zoom-3');
+  if(zoomLevel===2) bookWrap.classList.add('zoom-2');
+  if(zoomLevel===3) bookWrap.classList.add('zoom-3');
+}
+function openThumbs(){ buildThumbnails(); thumbPanel.classList.add('open'); }
+function closeThumbs(){ thumbPanel.classList.remove('open'); }
+function toggleThumbs(){ thumbPanel.classList.contains('open') ? closeThumbs() : openThumbs(); }
+
+function renderSearchResults(q, results){
+  searchResults.innerHTML='';
+  if(!q){ searchResults.innerHTML='<div class="sr-empty">Mag-type upang maghanap sa mga pahina.</div>'; return; }
+  if(!results.length){ searchResults.innerHTML='<div class="sr-empty">Walang nahanap na tugma.</div>'; return; }
+  const frag=document.createDocumentFragment();
+  results.slice(0,40).forEach(i=>{
+    const div=document.createElement('div');
+    div.className='sr-item';
+    div.innerHTML = '<b>Pahina '+(i+1)+'</b> — '+escapeHtml(PAGES[i].head||'');
+    div.addEventListener('click',()=>{ stopAutoplay(); quickJump(i); closeSearch(); });
+    frag.appendChild(div);
+  });
+  searchResults.appendChild(frag);
+}
+function doSearch(q){
+  q=(q||'').trim().toLowerCase();
+  const results=[];
+  if(q){
+    PAGES.forEach((p,i)=>{
+      const text=(p.head+' '+p.nodes.map(n=>n.x).join(' ')).toLowerCase();
+      if(text.includes(q)) results.push(i);
+    });
+  }
+  renderSearchResults(q, results);
+}
+function openSearch(){ searchPanel.classList.add('open'); searchInput.focus(); doSearch(searchInput.value); }
+function closeSearch(){ searchPanel.classList.remove('open'); }
+function toggleSearch(){ searchPanel.classList.contains('open') ? closeSearch() : openSearch(); }
+
+function doShare(){
+  const url = location.origin+location.pathname+'#p='+(index+1);
+  if(navigator.clipboard && navigator.clipboard.writeText){
+    navigator.clipboard.writeText(url).then(()=>showToast('Nakopya ang link ng pahina.')).catch(()=>showToast(url));
+  }else{
+    showToast(url);
+  }
+}
+function doDownload(){ window.print(); }
+
+pageSlider.max = TOTAL;
+pageRange.max = TOTAL;
+totalPagesEl.textContent = TOTAL;
+
+openBtn.addEventListener('click',()=>landingEl.classList.add('hide'));
+document.getElementById('edgePrev').addEventListener('click',()=>{stopAutoplay(); prev();});
+document.getElementById('edgeNext').addEventListener('click',()=>{stopAutoplay(); next();});
+document.getElementById('tbPrevBtn').addEventListener('click',()=>{stopAutoplay(); prev();});
+document.getElementById('tbNextBtn').addEventListener('click',()=>{stopAutoplay(); next();});
+document.getElementById('firstBtn').addEventListener('click',()=>{stopAutoplay(); quickJump(0);});
+document.getElementById('lastBtn').addEventListener('click',()=>{stopAutoplay(); quickJump(TOTAL-1);});
+document.getElementById('thumbsBtn').addEventListener('click', toggleThumbs);
+document.getElementById('closeThumbs').addEventListener('click', closeThumbs);
+document.getElementById('searchBtn').addEventListener('click', toggleSearch);
+document.getElementById('zoomInBtn').addEventListener('click',()=>setZoom(zoomLevel+1));
+document.getElementById('zoomOutBtn').addEventListener('click',()=>setZoom(zoomLevel-1));
+autoplayBtn.addEventListener('click', toggleAutoplay);
+soundBtn.addEventListener('click', toggleSound);
+fullscreenBtn.addEventListener('click', toggleFullscreen);
+document.getElementById('shareBtn').addEventListener('click', doShare);
+document.getElementById('downloadBtn').addEventListener('click', doDownload);
+searchInput.addEventListener('input', e=>doSearch(e.target.value));
+
+let sliderDebounce = 0;
+function onPageInput(value, immediate){
+  const targetPage = Number(value) - 1;
+  pageRange.value = value; pageSlider.value = value;
+  const pct = TOTAL>1 ? ((Number(value)-1)/(TOTAL-1))*100 : 0;
+  pageRange.style.setProperty('--pct', pct+'%');
+  clearTimeout(sliderDebounce);
+  if(immediate){ stopAutoplay(); jumpTo(targetPage, true); }
+  else sliderDebounce = setTimeout(()=>{ stopAutoplay(); jumpTo(targetPage, true); }, 45);
+}
+pageSlider.addEventListener('input', (e)=>onPageInput(e.target.value, false));
+pageSlider.addEventListener('change', (e)=>onPageInput(e.target.value, true));
+pageRange.addEventListener('input', (e)=>onPageInput(e.target.value, false));
+pageRange.addEventListener('change', (e)=>onPageInput(e.target.value, true));
+
+let lastWheelAt = 0;
+function onWheelPage(e){
+  e.preventDefault();
+  e.stopPropagation();
+  const delta = e.deltaY || e.deltaX;
+  if(!delta) return;
+  const now = Date.now();
+  if(now - lastWheelAt < 260) return;
+  lastWheelAt = now;
+  stopAutoplay();
+  if(delta > 0) next(); else prev();
+}
+const pageNavGroup = document.getElementById('pageNavGroup');
+pageNavGroup.addEventListener('wheel', onWheelPage, {passive:false});
+pageRange.addEventListener('wheel', onWheelPage, {passive:false});
+pageSlider.addEventListener('wheel', onWheelPage, {passive:false});
+stageEl.addEventListener('wheel', onWheelPage, {passive:false});
+
+window.addEventListener('keydown',e=>{
+  if(e.key==='ArrowRight'){e.preventDefault(); stopAutoplay(); next();}
+  if(e.key==='ArrowLeft'){e.preventDefault(); stopAutoplay(); prev();}
+  if(e.key==='Escape'){ closeThumbs(); closeSearch(); }
+});
+bookEl.addEventListener('click',e=>{
+  const r=bookEl.getBoundingClientRect();
+  const x=e.clientX-r.left;
+  stopAutoplay();
+  if(isMobile()){ x<r.width/2 ? prev() : next(); return; }
+  if(x<r.width*.32) prev();
+  else if(x>r.width*.68) next();
+});
+window.addEventListener('resize', refresh);
+
+const hashMatch = location.hash.match(/p=(\d+)/);
+if(hashMatch){
+  let start = Math.max(0, Math.min(TOTAL-1, parseInt(hashMatch[1],10)-1));
+  index = isMobile() ? start : (start%2===0 ? start : start-1);
+}
+refresh();
+</script>
+</body>
+</html>
