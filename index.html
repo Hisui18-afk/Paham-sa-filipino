@@ -30,14 +30,14 @@ button{font:inherit;background:none;border:none;cursor:pointer;color:inherit}
 .landing{
   position:fixed;inset:0;z-index:50;display:grid;place-items:center;
   background:
-    linear-gradient(180deg,rgba(30,18,8,.25) 0%,rgba(30,18,8,.15) 45%,rgba(30,18,8,.45) 100%),
-    url('cover.jpg') center/cover no-repeat,
-    #2b1a0c;
+    linear-gradient(180deg,rgba(255,248,230,.5) 0%,rgba(240,208,150,.32) 45%,rgba(190,140,70,.62) 100%),
+    url('mayonbg.jpg') center 68%/cover no-repeat,
+    linear-gradient(135deg,var(--wood1),var(--wood2) 55%,var(--wood3));
   transition:opacity .5s,visibility .5s
 }
 .landing.hide{opacity:0;visibility:hidden}
 .cover{
-  width:min(88vw,560px);border-radius:16px;padding:34px 32px 30px;
+  width:min(90vw,600px);border-radius:16px;padding:22px 22px 26px;
   color:var(--ink);text-align:center;display:flex;flex-direction:column;align-items:center;justify-content:center;
   background:
     radial-gradient(circle at 50% 30%,rgba(255,250,232,.9),transparent 55%),
@@ -45,6 +45,7 @@ button{font:inherit;background:none;border:none;cursor:pointer;color:inherit}
   border:4px double var(--accent);box-shadow:0 30px 60px rgba(60,35,10,.35),inset 0 0 0 1px #fff7e2;
 }
 .cover-kicker{font:italic 500 16px "Cormorant Garamond",serif;letter-spacing:.16em;color:#8a5a1e;text-transform:uppercase}
+.cover-photo{display:block;width:100%;max-height:min(44vh,360px);object-fit:cover;border-radius:10px;border:1px solid rgba(181,130,44,.55);box-shadow:0 6px 16px rgba(60,35,10,.25);margin-bottom:6px}
 .cover-title{font:800 clamp(42px,7.5vw,72px)/1.05 "Playfair Display",serif;margin:12px 0;color:#7a2530;letter-spacing:.01em}
 .cover-study{font:italic 600 20px "Cormorant Garamond",serif;max-width:520px;line-height:1.4;color:#6e4320;margin:2px 0 6px}
 .cover-orn{font-size:34px;margin:14px 0;color:var(--accent)}
@@ -332,6 +333,7 @@ button{font:inherit;background:none;border:none;cursor:pointer;color:inherit}
 <body>
 <div class="landing" id="landing">
   <div class="cover">
+    <img class="cover-photo" src="cover.jpg" alt="Collage ng binyag, pagbubuntis, kasal, at lamay">
     <div class="cover-title">Paham sa Filipino</div>
     <button class="open-btn" id="openBook">Buksan ang Aklat</button>
   </div>
