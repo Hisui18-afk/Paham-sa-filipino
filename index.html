@@ -325,6 +325,53 @@ button{font:inherit;background:none;border:none;cursor:pointer;color:inherit}
 }
 .toast.show{opacity:1;transform:translate(-50%,0)}
 
+.tts-panel{
+  position:fixed;right:14px;bottom:64px;width:min(340px,92vw);max-height:calc(100vh - 80px);
+  background:var(--tb-bg);border:1px solid rgba(255,255,255,.1);border-radius:10px;
+  box-shadow:0 12px 30px rgba(0,0,0,.5);z-index:30;display:none;flex-direction:column;overflow-y:auto;
+  color:var(--tb-fg);
+}
+.tts-panel.open{display:flex}
+.tts-head{
+  display:flex;align-items:center;justify-content:space-between;padding:10px 13px;
+  border-bottom:1px solid rgba(255,255,255,.08);font:600 12.5px "EB Garamond",serif;
+  letter-spacing:.08em;text-transform:uppercase;color:var(--tb-fg);
+}
+.tts-head button{width:26px;height:26px;display:grid;place-items:center;border-radius:5px;color:var(--tb-fg-dim)}
+.tts-head button:hover{background:var(--tb-hover);color:var(--tb-fg)}
+.tts-head button svg{width:15px;height:15px}
+.tts-body{padding:12px 13px 14px;display:flex;flex-direction:column;gap:10px}
+.tts-field{display:flex;align-items:center;gap:8px;font-size:12.5px;color:var(--tb-fg-dim)}
+.tts-field>span{flex:0 0 auto}
+.tts-field select{
+  flex:1;min-width:0;background:rgba(255,255,255,.08);border:1px solid rgba(255,255,255,.16);
+  border-radius:5px;color:var(--tb-fg);font:12.5px "EB Garamond",serif;padding:6px 7px;
+}
+.tts-field select option{background:#26180c;color:#f3e6c8}
+.tts-field input[type=range]{flex:1;min-width:0;accent-color:#e9c15a;cursor:pointer}
+.tts-rate-val{flex:0 0 38px;text-align:right;font-variant-numeric:tabular-nums;color:var(--tb-fg)}
+.tts-status{font-size:12px;line-height:1.4;color:var(--tb-fg-dim);min-height:17px}
+.tts-actions{display:flex;gap:6px}
+.tts-action{
+  flex:1;padding:8px 4px;border-radius:6px;background:rgba(255,255,255,.07);
+  border:1px solid rgba(255,255,255,.14);color:var(--tb-fg);font-size:13px;transition:background .12s;
+}
+.tts-action:hover{background:var(--tb-hover)}
+.tts-action.primary{background:linear-gradient(#d9a63c,#b5822c);border-color:#e6c66e;color:#fffaf0;font-weight:600}
+.tts-action.primary:hover{filter:brightness(1.08);background:linear-gradient(#d9a63c,#b5822c)}
+.tts-action:disabled{opacity:.5;cursor:default}
+.tts-download{
+  display:flex;align-items:center;justify-content:center;gap:7px;padding:9px;border-radius:6px;
+  background:rgba(181,130,44,.16);border:1px solid rgba(233,193,90,.4);color:#f3d99a;
+  font-size:13px;font-weight:600;transition:background .12s;
+}
+.tts-download:hover{background:rgba(181,130,44,.28)}
+.tts-download:disabled{opacity:.55;cursor:default}
+.tts-download svg{width:15px;height:15px}
+.tts-text-dl{align-self:center;font-size:11.5px;color:var(--tb-fg-dim);text-decoration:underline;text-underline-offset:2px}
+.tts-text-dl:hover{color:var(--tb-fg)}
+.tts-note{font-size:10.5px;line-height:1.35;color:#a8895a}
+
 @media (max-width:880px){
   body{overflow:auto}
   .topbar{height:auto;min-height:42px;font-size:12px;padding:6px 10px;line-height:1.3}
@@ -348,6 +395,8 @@ button{font:inherit;background:none;border:none;cursor:pointer;color:inherit}
   .page-head{font-size:17px}
   .page-body{font-size:13.6px}
   .thumb-grid{grid-template-columns:repeat(auto-fill,minmax(84px,1fr))}
+  .tts-panel{left:8px;right:8px;top:56px;bottom:auto;width:auto;max-height:calc(100vh - 140px);overflow-y:auto}
+  .tts-body{padding:10px 11px 12px;gap:8px}
 }
 @media (prefers-reduced-motion:reduce){
   *,*::before,*::after{scroll-behavior:auto !important;animation-duration:.001ms !important;animation-iteration-count:1 !important;transition-duration:.001ms !important}
@@ -399,6 +448,26 @@ button{font:inherit;background:none;border:none;cursor:pointer;color:inherit}
     <div class="search-results" id="searchResults"></div>
   </div>
 
+  <div class="tts-panel" id="ttsPanel" role="dialog" aria-label="Basa-basa (Text-to-Speech)">
+    <div class="tts-head">
+      <span>Basa-basa · Text-to-Speech</span>
+      <button id="closeTts" aria-label="Isara"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="5" y1="5" x2="19" y2="19"/><line x1="19" y1="5" x2="5" y2="19"/></svg></button>
+    </div>
+    <div class="tts-body">
+      <label class="tts-field"><span>Tinig</span><select id="ttsVoice" aria-label="Tinig na gagamitin"></select></label>
+      <label class="tts-field"><span>Bilis</span><input id="ttsRate" type="range" min="0.6" max="1.4" step="0.05" value="0.95" aria-label="Bilis ng pagbasa"><span class="tts-rate-val" id="ttsRateVal">0.95×</span></label>
+      <div class="tts-status" id="ttsStatus" aria-live="polite">Babasahin ang kasalukuyang pahina.</div>
+      <div class="tts-actions">
+        <button class="tts-action primary" id="ttsPlay">Basa</button>
+        <button class="tts-action" id="ttsPause">Pause</button>
+        <button class="tts-action" id="ttsStop">Tigil</button>
+      </div>
+      <button class="tts-download" id="ttsDownload"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3v12"/><polyline points="7,10 12,15 17,10"/><path d="M5 19h14"/></svg><span>I-download ang audio (MP3)</span></button>
+      <button class="tts-text-dl" id="ttsDownloadText">I-download ang teksto (.txt)</button>
+      <div class="tts-note">Babasahin ang kasalukuyang nakikitang pahina. Ang audio download ay nangangailangan ng internet.</div>
+    </div>
+  </div>
+
   <div class="toast" id="toast"></div>
 
   <footer class="toolbar" id="toolbar">
@@ -419,6 +488,7 @@ button{font:inherit;background:none;border:none;cursor:pointer;color:inherit}
       <button class="tb-btn" id="zoomInBtn" title="Palakihin"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="7"/><line x1="21" y1="21" x2="16.65" y2="16.65"/><line x1="8" y1="11" x2="14" y2="11"/><line x1="11" y1="8" x2="11" y2="14"/></svg></button>
       <button class="tb-btn" id="autoplayBtn" title="Auto-flip"><svg viewBox="0 0 24 24"><polygon points="6,4 20,12 6,20" fill="currentColor" stroke="none"/></svg></button>
       <button class="tb-btn" id="soundBtn" title="Tunog"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 9v6h4l5 4V5L8 9H4z" fill="currentColor" stroke="none"/><line x1="16" y1="9" x2="22" y2="15"/><line x1="22" y1="9" x2="16" y2="15"/></svg></button>
+      <button class="tb-btn" id="ttsBtn" title="Basa-basa (Text-to-Speech)" aria-label="Basa-basa (Text-to-Speech)" aria-controls="ttsPanel" aria-expanded="false"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 11.5a8.4 8.4 0 01-9 8.4 9.6 9.6 0 01-3.9-.8L3 21l1.9-4.6A8.1 8.1 0 013 11.5a8.4 8.4 0 019-8.4 8.4 8.4 0 019 8.4z"/><line x1="7.5" y1="9" x2="16.5" y2="9"/><line x1="7.5" y1="12.5" x2="14" y2="12.5"/></svg></button>
       <button class="tb-btn" id="fullscreenBtn" title="Fullscreen"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 9V4h5"/><path d="M15 4h5v5"/><path d="M20 15v5h-5"/><path d="M9 20H4v-5"/></svg></button>
       <button class="tb-btn" id="shareBtn" title="Ibahagi"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="18" cy="5" r="2.4"/><circle cx="6" cy="12" r="2.4"/><circle cx="18" cy="19" r="2.4"/><line x1="8.3" y1="10.7" x2="15.7" y2="6.3"/><line x1="8.3" y1="13.3" x2="15.7" y2="17.7"/></svg></button>
       <button class="tb-btn" id="downloadBtn" title="I-print / I-download"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3v12"/><polyline points="7,10 12,15 17,10"/><path d="M5 19h14"/></svg></button>
@@ -456,6 +526,17 @@ const toastEl = document.getElementById('toast');
 const autoplayBtn = document.getElementById('autoplayBtn');
 const soundBtn = document.getElementById('soundBtn');
 const fullscreenBtn = document.getElementById('fullscreenBtn');
+const ttsPanel = document.getElementById('ttsPanel');
+const ttsBtn = document.getElementById('ttsBtn');
+const ttsVoiceSel = document.getElementById('ttsVoice');
+const ttsRate = document.getElementById('ttsRate');
+const ttsRateVal = document.getElementById('ttsRateVal');
+const ttsStatus = document.getElementById('ttsStatus');
+const ttsPlayBtn = document.getElementById('ttsPlay');
+const ttsPauseBtn = document.getElementById('ttsPause');
+const ttsStopBtn = document.getElementById('ttsStop');
+const ttsDownloadBtn = document.getElementById('ttsDownload');
+const ttsDownloadTextBtn = document.getElementById('ttsDownloadText');
 
 const isMobile = () => window.matchMedia('(max-width:880px)').matches;
 let index = 0;
@@ -464,6 +545,11 @@ let zoomLevel = 1;
 let autoplayTimer = null;
 let soundOn = false;
 let toastTimer = 0;
+let ttsState = 'idle'; // idle | playing | paused
+let ttsToken = 0;
+let ttsVoice = null;
+let ttsRateValue = 0.95;
+let ttsDownloading = false;
 
 function escapeHtml(s){
   return String(s).replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
@@ -686,6 +772,7 @@ function showToast(msg){
 }
 function next(){
   if(busy) return;
+  stopTts(true);
   if(isMobile()){
     if(index>=TOTAL-1) return;
     busy=true;
@@ -703,6 +790,7 @@ function next(){
 }
 function prev(){
   if(busy) return;
+  stopTts(true);
   if(isMobile()){
     if(index<=0) return;
     busy=true;
@@ -721,6 +809,7 @@ function prev(){
 }
 function quickJump(target){
   if(busy) return;
+  stopTts(true);
   const desired = Math.max(0, Math.min(TOTAL-1, Number(target)));
   const finalIndex = isMobile() ? desired : (desired%2===0 ? desired : desired-1);
   if(finalIndex === index) return;
@@ -736,6 +825,7 @@ function quickJump(target){
   },140);
 }
 function jumpTo(target, animate=true){
+  stopTts(true);
   const desired = Math.max(0, Math.min(TOTAL-1, Number(target)));
   const finalIndex = isMobile() ? desired : (desired%2===0 ? desired : desired-1);
   if(!animate || finalIndex === index || busy){
@@ -791,6 +881,7 @@ function stopAutoplay(){
 }
 function toggleAutoplay(){
   if(autoplayTimer){ stopAutoplay(); return; }
+  stopTts(true);
   autoplayBtn.innerHTML = '<svg viewBox="0 0 24 24"><rect x="6" y="4" width="4" height="16" fill="currentColor" stroke="none"/><rect x="14" y="4" width="4" height="16" fill="currentColor" stroke="none"/></svg>';
   autoplayBtn.classList.add('active');
   autoplayTimer = setInterval(()=>{
@@ -813,6 +904,276 @@ function toggleFullscreen(){
 document.addEventListener('fullscreenchange', ()=>{
   fullscreenBtn.classList.toggle('active', !!document.fullscreenElement);
 });
+
+/* ---------- Text-to-Speech (basa-basa) ---------- */
+function lsGet(key){
+  try{ return localStorage.getItem(key); }catch(e){ return null; }
+}
+function lsSet(key, value){
+  try{ localStorage.setItem(key, value); }catch(e){}
+}
+function ttsPlain(s){
+  return String(s == null ? '' : s).replace(/\*\*/g,'').replace(/\*/g,'').replace(/\s+/g,' ').trim();
+}
+function ttsPageText(page){
+  const parts = [];
+  if(page.head) parts.push(ttsPlain(page.head));
+  (page.nodes || []).forEach(node=>{
+    if(node.t==='p' || node.t==='h' || node.t==='item'){
+      parts.push(ttsPlain(node.x));
+    }else if(node.t==='title'){
+      parts.push(ttsPlain(node.x));
+      if(node.sub) parts.push(ttsPlain(node.sub));
+    }else if(node.t==='chart'){
+      if(node.src) parts.push(ttsPlain(node.src));
+      (node.rows || []).forEach(row=>parts.push(ttsPlain(row[0])));
+    }
+    // 'toc', 'legend' and picture-only nodes are skipped.
+  });
+  if(page.sig) parts.push(ttsPlain(page.sig));
+  return parts.filter(Boolean).join('. ');
+}
+function visiblePages(){
+  if(isMobile()) return [{ page:PAGES[index], num:index+1 }];
+  const left = index % 2 === 0 ? index : Math.max(0,index-1);
+  const right = Math.min(TOTAL-1, left+1);
+  const out = [{ page:PAGES[left], num:left+1 }];
+  if(right !== left) out.push({ page:PAGES[right], num:right+1 });
+  return out;
+}
+function visibleTtsText(){
+  return visiblePages().map(v=>ttsPageText(v.page)).filter(Boolean).join('. ');
+}
+function pageLabel(nums){
+  return nums.length > 1 ? 'pahina ' + nums[0] + '–' + nums[nums.length-1] : 'pahina ' + nums[0];
+}
+function splitForSpeech(text, max){
+  max = max || 200;
+  const clean = String(text).replace(/\s+/g,' ').trim();
+  if(!clean) return [];
+  const sentences = clean.match(/[^.!?…]+[.!?…]+["”’']?|[^.!?…]+$/g) || [clean];
+  const chunks = [];
+  let cur = '';
+  sentences.forEach(raw=>{
+    let s = raw.trim();
+    if(!s) return;
+    while(s.length > max){
+      if(cur){ chunks.push(cur); cur = ''; }
+      let cut = s.lastIndexOf(' ', max);
+      if(cut < max * 0.5) cut = max;
+      chunks.push(s.slice(0, cut).trim());
+      s = s.slice(cut).trim();
+    }
+    if(!s) return;
+    if((cur ? cur + ' ' + s : s).length > max && cur){
+      chunks.push(cur); cur = s;
+    }else{
+      cur = cur ? cur + ' ' + s : s;
+    }
+  });
+  if(cur) chunks.push(cur);
+  return chunks;
+}
+function ttsVoices(){
+  try{ return ('speechSynthesis' in window) ? speechSynthesis.getVoices() : []; }catch(e){ return []; }
+}
+function applyVoice(){
+  const uri = ttsVoiceSel.value;
+  ttsVoice = ttsVoices().find(v=>v.voiceURI === uri) || null;
+  lsSet('tanaw-tts-voice', uri);
+}
+function fillVoiceOptions(){
+  const voices = ttsVoices();
+  const saved = lsGet('tanaw-tts-voice') || '';
+  const score = v=>{
+    const l = (v.lang || '').toLowerCase();
+    if(l.indexOf('fil') === 0 || l.indexOf('tl') === 0) return 0;
+    if(l.indexOf('en-ph') === 0) return 1;
+    if(l.indexOf('en') === 0) return 2;
+    return 3;
+  };
+  const sorted = voices.slice().sort((a,b)=>score(a)-score(b) || a.name.localeCompare(b.name));
+  ttsVoiceSel.innerHTML = '';
+  const auto = document.createElement('option');
+  auto.value = ''; auto.textContent = 'Awtomatiko (Filipino)';
+  ttsVoiceSel.appendChild(auto);
+  sorted.forEach(v=>{
+    const opt = document.createElement('option');
+    opt.value = v.voiceURI;
+    opt.textContent = v.name + ' (' + v.lang + ')';
+    ttsVoiceSel.appendChild(opt);
+  });
+  ttsVoiceSel.value = sorted.some(v=>v.voiceURI === saved) ? saved : '';
+  applyVoice();
+}
+function setTtsRate(value){
+  const v = Number(value);
+  ttsRateValue = Math.max(0.6, Math.min(1.4, isFinite(v) ? v : 0.95));
+  ttsRate.value = ttsRateValue;
+  ttsRateVal.textContent = (Math.round(ttsRateValue * 100) / 100) + '×';
+  lsSet('tanaw-tts-rate', ttsRateValue);
+}
+function updateTtsUI(){
+  const speaking = ttsState !== 'idle';
+  ttsBtn.classList.toggle('active', speaking);
+  ttsPlayBtn.disabled = ttsState === 'playing';
+  ttsPlayBtn.textContent = ttsState === 'paused' ? 'Ituloy' : 'Basa';
+  ttsPauseBtn.disabled = ttsState !== 'playing';
+  ttsPauseBtn.textContent = 'Pause';
+  ttsStopBtn.disabled = ttsState === 'idle';
+}
+function ttsIdleStatus(){
+  if(ttsState !== 'idle') return;
+  ttsStatus.textContent = 'Babasahin ang ' + pageLabel(visiblePages().map(v=>v.num)) + '.';
+}
+function startTts(){
+  if(!('speechSynthesis' in window)){
+    showToast('Hindi sinusuportahan ng browser ang text-to-speech.');
+    return;
+  }
+  if(ttsState === 'paused'){
+    speechSynthesis.resume();
+    ttsState = 'playing';
+    ttsStatus.textContent = 'Itinuloy ang pagbasa…';
+    updateTtsUI();
+    return;
+  }
+  const items = visiblePages();
+  const text = items.map(v=>ttsPageText(v.page)).filter(Boolean).join('. ');
+  if(!text){
+    showToast('Walang tekstong mababasa sa pahinang ito.');
+    return;
+  }
+  const chunks = splitForSpeech(text);
+  if(!chunks.length) return;
+  stopAutoplay();
+  const label = pageLabel(items.map(v=>v.num));
+  const token = ++ttsToken;
+  try{ speechSynthesis.cancel(); }catch(e){}
+  ttsState = 'playing';
+  updateTtsUI();
+  let i = 0;
+  const nextOne = ()=>{
+    if(token !== ttsToken || ttsState === 'idle') return;
+    if(i >= chunks.length){
+      ttsState = 'idle';
+      ttsStatus.textContent = 'Tapos na ang pagbasa ng ' + label + '.';
+      updateTtsUI();
+      return;
+    }
+    const utter = new SpeechSynthesisUtterance(chunks[i]);
+    i++;
+    if(ttsVoice){ utter.voice = ttsVoice; utter.lang = ttsVoice.lang; }
+    else utter.lang = 'fil-PH';
+    utter.rate = ttsRateValue;
+    utter.pitch = 1;
+    utter.onend = ()=>{ if(token === ttsToken) nextOne(); };
+    utter.onerror = (e)=>{
+      if(token !== ttsToken) return;
+      if(e && (e.error === 'interrupted' || e.error === 'canceled')) return;
+      ttsState = 'idle';
+      ttsStatus.textContent = 'May problemang naganap sa pagbasa. Pumili ng ibang tinig o subukan muli.';
+      updateTtsUI();
+    };
+    ttsStatus.textContent = 'Binabasa ang ' + label + '… (' + i + '/' + chunks.length + ')';
+    speechSynthesis.speak(utter);
+  };
+  setTimeout(nextOne, 80);
+}
+function pauseTts(){
+  if(ttsState === 'playing'){
+    try{ speechSynthesis.pause(); }catch(e){}
+    ttsState = 'paused';
+    ttsStatus.textContent = 'Nakapause ang pagbasa.';
+  }else if(ttsState === 'paused'){
+    try{ speechSynthesis.resume(); }catch(e){}
+    ttsState = 'playing';
+    ttsStatus.textContent = 'Itinuloy ang pagbasa…';
+  }
+  updateTtsUI();
+}
+function stopTts(silent){
+  if(ttsState === 'idle') return;
+  ttsToken++;
+  ttsState = 'idle';
+  try{ speechSynthesis.cancel(); }catch(e){}
+  updateTtsUI();
+  if(!silent) ttsStatus.textContent = 'Hininto ang pagbasa.';
+}
+function openTts(){
+  closeSearch();
+  ttsPanel.classList.add('open');
+  ttsBtn.setAttribute('aria-expanded','true');
+  fillVoiceOptions();
+  ttsIdleStatus();
+}
+function closeTts(){
+  ttsPanel.classList.remove('open');
+  ttsBtn.setAttribute('aria-expanded','false');
+}
+function toggleTts(){ ttsPanel.classList.contains('open') ? closeTts() : openTts(); }
+function triggerDownload(blob, filename){
+  const a = document.createElement('a');
+  const url = URL.createObjectURL(blob);
+  a.href = url; a.download = filename;
+  document.body.appendChild(a);
+  a.click();
+  a.remove();
+  setTimeout(()=>URL.revokeObjectURL(url), 30000);
+}
+function ttsFileBase(nums){ return 'TANAW-pahina-' + nums.join('-'); }
+function downloadTtsText(){
+  const items = visiblePages();
+  const text = items.map(v=>ttsPageText(v.page)).filter(Boolean).join('\n\n');
+  if(!text){ showToast('Walang tekstong maida-download.'); return; }
+  triggerDownload(new Blob([text], {type:'text/plain;charset=utf-8'}), ttsFileBase(items.map(v=>v.num)) + '.txt');
+  showToast('Na-download ang teksto.');
+}
+async function downloadTtsAudio(){
+  if(ttsDownloading) return;
+  const items = visiblePages();
+  const nums = items.map(v=>v.num);
+  const text = items.map(v=>ttsPageText(v.page)).filter(Boolean).join('. ');
+  if(!text){ showToast('Walang tekstong maida-download.'); return; }
+  const label = pageLabel(nums);
+  const base = ttsFileBase(nums);
+  const btnLabel = ttsDownloadBtn.querySelector('span');
+  const original = btnLabel.textContent;
+  ttsDownloading = true;
+  ttsDownloadBtn.disabled = true;
+  btnLabel.textContent = 'Ginagawa ang audio…';
+  ttsStatus.textContent = 'Ginagawa ang audio ng ' + label + '…';
+  try{
+    const res = await fetch('/api/tts', {
+      method: 'POST',
+      headers: {'Content-Type': 'application/json'},
+      body: JSON.stringify({ text: text, lang: 'fil' })
+    });
+    if(!res.ok) throw new Error('HTTP ' + res.status);
+    const blob = await res.blob();
+    if(!blob.size) throw new Error('empty audio');
+    triggerDownload(blob, base + '.mp3');
+    ttsStatus.textContent = 'Na-download ang audio ng ' + label + '.';
+    showToast('Na-download ang audio (MP3).');
+  }catch(err){
+    // Still make the content downloadable if the audio service is unavailable.
+    triggerDownload(new Blob([text], {type:'text/plain;charset=utf-8'}), base + '.txt');
+    ttsStatus.textContent = 'Hindi available ang audio ngayon — na-download ang teksto (.txt).';
+    showToast('Na-download ang teksto (hindi available ang audio).');
+  }finally{
+    ttsDownloading = false;
+    ttsDownloadBtn.disabled = false;
+    btnLabel.textContent = original;
+  }
+}
+setTtsRate(lsGet('tanaw-tts-rate') || 0.95);
+fillVoiceOptions();
+if('speechSynthesis' in window){
+  if(speechSynthesis.addEventListener) speechSynthesis.addEventListener('voiceschanged', fillVoiceOptions);
+  else speechSynthesis.onvoiceschanged = fillVoiceOptions;
+}
+updateTtsUI();
+
 function setZoom(level){
   zoomLevel = Math.max(1, Math.min(3, level));
   bookWrap.classList.remove('zoom-2','zoom-3');
@@ -848,7 +1209,7 @@ function doSearch(q){
   }
   renderSearchResults(q, results);
 }
-function openSearch(){ searchPanel.classList.add('open'); searchInput.focus(); doSearch(searchInput.value); }
+function openSearch(){ closeTts(); searchPanel.classList.add('open'); searchInput.focus(); doSearch(searchInput.value); }
 function closeSearch(){ searchPanel.classList.remove('open'); }
 function toggleSearch(){ searchPanel.classList.contains('open') ? closeSearch() : openSearch(); }
 
@@ -880,6 +1241,15 @@ document.getElementById('zoomInBtn').addEventListener('click',()=>setZoom(zoomLe
 document.getElementById('zoomOutBtn').addEventListener('click',()=>setZoom(zoomLevel-1));
 autoplayBtn.addEventListener('click', toggleAutoplay);
 soundBtn.addEventListener('click', toggleSound);
+ttsBtn.addEventListener('click', toggleTts);
+document.getElementById('closeTts').addEventListener('click', closeTts);
+ttsPlayBtn.addEventListener('click', startTts);
+ttsPauseBtn.addEventListener('click', pauseTts);
+ttsStopBtn.addEventListener('click', ()=>stopTts());
+ttsVoiceSel.addEventListener('change', applyVoice);
+ttsRate.addEventListener('input', e=>setTtsRate(e.target.value));
+ttsDownloadBtn.addEventListener('click', downloadTtsAudio);
+ttsDownloadTextBtn.addEventListener('click', downloadTtsText);
 fullscreenBtn.addEventListener('click', toggleFullscreen);
 document.getElementById('shareBtn').addEventListener('click', doShare);
 document.getElementById('downloadBtn').addEventListener('click', doDownload);
@@ -927,7 +1297,7 @@ stageEl.addEventListener('wheel', onWheelPage, {passive:false});
 window.addEventListener('keydown',e=>{
   if(e.key==='ArrowRight'){e.preventDefault(); stopAutoplay(); next();}
   if(e.key==='ArrowLeft'){e.preventDefault(); stopAutoplay(); prev();}
-  if(e.key==='Escape'){ closeThumbs(); closeSearch(); }
+  if(e.key==='Escape'){ closeThumbs(); closeSearch(); closeTts(); }
 });
 bookEl.addEventListener('click',e=>{
   const r=bookEl.getBoundingClientRect();
